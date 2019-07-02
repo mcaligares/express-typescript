@@ -1,0 +1,29 @@
+{
+  "name": "express-typescript",
+  "version": "0.0.1",
+  "description": "Express project with TypeScript support ready to start coding",
+  "main": "server.ts",
+  "scripts": {
+    "start": "npm run build && node dist/server.js",
+    "build": "npm run lint && tsc",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com:mcaligares/express-typescript.git"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "typescript"
+  ],
+  "author": "mcaligares@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.17.0",
+    "express": "^4.17.1",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2"
+  }
+}
