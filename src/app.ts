@@ -8,6 +8,10 @@ export default class Application {
    this.app = express()
   }
 
+  get expressApplication(): express.Application {
+    return this.app
+  }
+
   withPort(port: number): Application {
     this.port = port
     this.app.set('port', port)
