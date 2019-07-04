@@ -2,11 +2,13 @@
   "name": "express-typescript",
   "version": "0.0.1",
   "description": "Express project with TypeScript support ready to start coding",
-  "main": "server.ts",
+  "main": "index.ts",
   "scripts": {
     "start": "npm run build && node dist/server.js",
     "build": "npm run lint && tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
+    "test-coverage": "jest --collectCoverage --detectOpenHandles",
+    "test-watch": "jest --watch",
     "test": "jest"
   },
   "repository": {

@@ -1,10 +1,43 @@
-import { Request, Response } from 'express'
-import Application from './app'
+import express, { Application } from 'express'
 
-const app = new Application()
-  .withPort(8080)
-  .withRoute('/', (request: Request, response: Response) => {
-    response.send('Hello from Express server with TypeScript!')
-  })
+export default class Server {
+  private port: number
+  private app: Application
+  private running: boolean = false
 
-app.run()
+  constructor() {
+   this.app = express()
+  }
+
+  get isRunning() {
+    return this.running
+  }
+
+  get application(): Application {
+    return this.app
+  }
+
+  withPort(port: number): Server {
+    this.port = port
+    this.app.set('port', port)
+    return this
+  }
+
+  withRoute(path: string, handler: any): Server {
+    this.app.use(path, handler)
+    return this
+  }
+
+  run(callback?: Function) {
+    if (!this.port) throw new Error('Server port not defined yet.')
+
+    if (this.running) throw new Error('Server is already running.')
+
+    return new Promise((resolve) => this.app.listen(this.port, () => {
+      this.running = true
+      if (callback) callback()
+      resolve()
+    }))
+  }
+
+}
