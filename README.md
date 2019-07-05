@@ -9,3 +9,5 @@ With this project we want to makes it easy to create Express projects.
 - TypeScript
 - Jest
 - SuperTest
+- Nodemon
+- TS-Node

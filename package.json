@@ -4,7 +4,8 @@
   "description": "Express project with TypeScript support ready to start coding",
   "main": "index.ts",
   "scripts": {
-    "start": "npm run build && node dist/server.js",
+    "start": "node -r ts-node/register ./src/index.ts",
+    "dev": "nodemon",
     "build": "npm run lint && tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test-coverage": "jest --collectCoverage --detectOpenHandles",
@@ -32,7 +33,9 @@
     "@types/jest": "^24.0.15",
     "@types/supertest": "^2.0.7",
     "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
     "supertest": "^4.0.2",
-    "ts-jest": "^24.0.2"
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0"
   }
 }
