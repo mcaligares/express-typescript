@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import Server from './src/server'
+import Server from './server'
 
 const app = new Server()
   .withPort(8080)
   .withRoute('/', (request: Request, response: Response) => {
-    response.send('Hello from Express server with TypeScript!')
+    response.send('Hello from Express with TypeScript!!!')
   })
 
 app.run(() => {
