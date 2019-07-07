@@ -22,4 +22,5 @@ export class UserController {
 
 }
 
-export default new UserController().router
+const UserRouter = new UserController().router
+export default UserRouter
