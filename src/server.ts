@@ -28,6 +28,11 @@ export default class Server {
     return this
   }
 
+  withJson(): Server {
+    this.app.use(express.json())
+    return this
+  }
+
   run(callback?: Function) {
     if (!this.port) throw new Error('Server port not defined yet.')
 
