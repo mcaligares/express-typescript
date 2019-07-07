@@ -1,12 +1,12 @@
-import express, { Application } from 'express'
+import express, { Application, RequestHandler } from 'express'
 
 export default class Server {
   private port: number
   private app: Application
   private running: boolean = false
 
-  constructor() {
-   this.app = express()
+  constructor(expressApplication?: Application | any) {
+   this.app = expressApplication || express()
   }
 
   get isRunning() {
@@ -23,7 +23,7 @@ export default class Server {
     return this
   }
 
-  withRoute(path: string, handler: any): Server {
+  withRoute(path: string, ...handler: RequestHandler[]): Server {
     this.app.use(path, handler)
     return this
   }
