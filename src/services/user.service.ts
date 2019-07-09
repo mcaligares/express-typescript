@@ -1,32 +1,15 @@
 import { UserDocument, UserModel } from '../models/user.model';
 import { AlreadyExistException } from '../utils/model.exceptions'
+import BaseService from './base.service';
 
-export default class UserService {
+export default class UserService extends BaseService<UserDocument> {
 
   async create(user: UserDocument): Promise<UserDocument> {
-    const userExists = await this.findBy({ username: user.username })
-
+    const userExists = await this.findBy(UserModel, { username: user.username })
     if (userExists) throw new AlreadyExistException()
 
-    return await this.save(user)
-  }
-
-  findBy(conditions: any): Promise<UserDocument> {
-    return new Promise<UserDocument>((resolve) => {
-      UserModel.findOne(conditions, (error: any, userFound: UserDocument) => {
-        if (error) throw error
-        resolve(userFound)
-      })
-    })
-  }
-
-  save(user: UserDocument): Promise<UserDocument> {
-    return new Promise<UserDocument>((resolve) => {
-      user.save((error: any, userCreated: UserDocument) => {
-        if (error) throw error
-        resolve(userCreated)
-      })
-    })
+    const userCreated = await this.save(user)
+    return userCreated
   }
 
 }
