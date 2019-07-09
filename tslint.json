@@ -6,6 +6,7 @@
     "ban-types": false,
     "no-console": false,
     "member-access": false,
+    "max-classes-per-file": false,
     "no-shadowed-variable": false,
     "object-literal-sort-keys": false,
     "member-ordering": [true, {"order": "instance-sandwich"}],

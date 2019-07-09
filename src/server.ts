@@ -1,4 +1,5 @@
 import express, { Application, RequestHandler } from 'express'
+import mongoose from 'mongoose'
 
 export default class Server {
   private port: number
@@ -30,6 +31,17 @@ export default class Server {
 
   withJson(): Server {
     this.app.use(express.json())
+    return this
+  }
+
+  withMongoDB(uri: string): Server {
+    const options = {
+      useCreateIndex: true,
+      useNewUrlParser: true,
+    }
+    mongoose.connect(uri, options).catch((error: any) => {
+      throw new Error('MongoDB connection error. Please make sure MongoDB is running. ' + error)
+    })
     return this
   }
 
