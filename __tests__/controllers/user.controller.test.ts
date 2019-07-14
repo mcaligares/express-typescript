@@ -1,14 +1,15 @@
 import request from 'supertest'
 import UserController from '../../src/controllers/user.controller'
+import { UserModel } from '../../src/models/user.model'
 import Server from '../../src/server'
 import { AlreadyExistException } from '../../src/utils/model.exceptions'
-import { invalidEmailsList, invalidPasswordList, responseMock } from '../mocks'
+import * as mocks from '../mocks'
 
 describe('validation middleware test', () => {
   const server = new Server().withJson().withPort(3000).withRoute('/', new UserController().router)
   const controller = request(server.application)
 
-  test.each(invalidEmailsList)(
+  test.each(mocks.invalidEmailsList)(
     'controller should response with email errors',
     async (username) => {
       const data = { username, password: '1234567' }
@@ -20,7 +21,7 @@ describe('validation middleware test', () => {
     },
   )
 
-  test.each(invalidPasswordList)(
+  test.each(mocks.invalidPasswordList)(
     'controller should response with password errors',
     async (password) => {
       const data = { username: 'test@email.com', password }
@@ -34,29 +35,38 @@ describe('validation middleware test', () => {
 })
 
 describe('unit test for controller', () => {
-  const data = { username: 'test@email.com', password: '1234567' }
-  const errors = [ { code: 409, error: new AlreadyExistException() }, { code: 500, error: new Error() }]
-
   beforeEach(() => {
-    responseMock.mockReset()
+    mocks.serviceMock.mockReset()
+    mocks.responseMock.mockReset()
   })
 
-  test('should respond without errors', async () => {
-    const serviceMock = { create: jest.fn(), save: jest.fn(), findBy: jest.fn() }
-    serviceMock.create.mockReturnValue(data)
-    await new UserController(serviceMock).create({ body: data }, responseMock)
-    expect(serviceMock.create).toBeCalled()
-    expect(responseMock.send).toBeCalledWith(data)
+  const controller = (service: any) => new UserController(service)
+
+  const validData = { username: 'test@email.com', password: '1234567' }
+  test('create endpoint should respond without errors when send valid data', async () => {
+    mocks.serviceMock.create.mockReturnValue(validData)
+    await controller(mocks.serviceMock).create({ body: validData }, mocks.responseMock)
+    expect(mocks.serviceMock.create).toBeCalled()
+    expect(mocks.responseMock.json).toBeCalledWith(validData)
   })
 
+  const errors = [ { code: 409, error: new AlreadyExistException() }, { code: 500, error: new Error() }]
   test.each(errors)(
-    'should respond with error',
+    'create endpoint should respond with an error when is throw by create method',
     async (exception) => {
-      const serviceMock = { save: jest.fn(), findBy: jest.fn(), create: () => { throw exception.error } }
-      await new UserController(serviceMock).create({ body: data }, responseMock)
-      expect(serviceMock.create).toThrow(exception.error)
-      expect(responseMock.status).toBeCalledWith(exception.code)
-      expect(responseMock.send).toBeCalledWith({errors: [exception.error]})
+      mocks.serviceMock.create.mockImplementation(() => { throw exception.error })
+      await controller(mocks.serviceMock).create({ body: validData }, mocks.responseMock)
+      expect(mocks.serviceMock.create).toThrow(exception.error)
+      expect(mocks.responseMock.status).toBeCalledWith(exception.code)
+      expect(mocks.responseMock.send).toBeCalledWith({errors: [exception.error]})
     },
   )
+
+  test('list endpoint should respond with a user list', async () => {
+    const users = [ 'user 1', 'user 2' ]
+    mocks.serviceMock.findAllBy.mockReturnValue(users)
+    await controller(mocks.serviceMock).list({}, mocks.responseMock)
+    expect(mocks.serviceMock.findAllBy).toBeCalledWith(UserModel)
+    expect(mocks.responseMock.json).toBeCalledWith({ users })
+  })
 })

@@ -18,6 +18,7 @@ export const invalidPasswordList = [
 
 class ResponseMock {
   send = jest.fn()
+  json = jest.fn()
   status = jest.fn()
 
   constructor() {
@@ -26,9 +27,28 @@ class ResponseMock {
 
   mockReset = () => {
     this.send.mockReset()
+    this.json.mockReset()
     this.status.mockReset()
     this.status.mockReturnThis()
   }
 }
 
 export const responseMock = new ResponseMock()
+
+class ServiceMock {
+  create = jest.fn()
+  save = jest.fn()
+  findBy = jest.fn()
+  findAllBy = jest.fn()
+
+  constructor() { this.mockReset() }
+
+  mockReset = () => {
+    this.create.mockReset()
+    this.save.mockReset()
+    this.findBy.mockReset()
+    this.findAllBy.mockReset()
+  }
+}
+
+export const serviceMock = new ServiceMock()
