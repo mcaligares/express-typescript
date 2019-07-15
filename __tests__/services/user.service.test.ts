@@ -1,6 +1,7 @@
+import bcrypt from 'bcrypt'
 import { UserModel } from '../../src/models/user.model'
 import UserService from '../../src/services/user.service'
-import { AlreadyExistException } from '../../src/utils/model.exceptions';
+import { AlreadyExistException, NotFoundException, WrongPasswordException } from '../../src/utils/model.exceptions';
 
 const user = new UserModel({ username: 'test@email.com', password: '1234567' })
 
@@ -31,5 +32,42 @@ test('should throw an exception when user to create already exists', async () =>
     expect(service.save).not.toBeCalled()
     expect(service.findBy).toBeCalledWith(UserModel, { username: user.username })
     expect(e instanceof AlreadyExistException).toBeTruthy()
+  }
+})
+
+test('should return the user found', async () => {
+  const service = new UserService()
+
+  service.findBy = jest.fn().mockReturnValue(user)
+
+  const userFound = await service.findyByUsernameAndPassword(user.username, '1234567')
+
+  expect(userFound).toEqual(user)
+  expect(service.findBy).toBeCalledWith(UserModel, { username: user.username })
+})
+
+test('should throw an exception when user is not found', async () => {
+  const service = new UserService()
+
+  service.findBy = jest.fn().mockReturnValue(null)
+
+  try {
+    await service.findyByUsernameAndPassword(user.username, '1234567')
+  } catch (e) {
+    expect(service.findBy).toBeCalledWith(UserModel, { username: user.username })
+    expect(e instanceof NotFoundException).toBeTruthy()
+  }
+})
+
+test('should throw an exception when the password are incorrect', async () => {
+  const service = new UserService()
+
+  service.findBy = jest.fn().mockReturnValue(user)
+
+  try {
+    await service.findyByUsernameAndPassword(user.username, 'wrong password')
+  } catch (e) {
+    expect(service.findBy).toBeCalledWith(UserModel, { username: user.username })
+    expect(e instanceof WrongPasswordException).toBeTruthy()
   }
 })

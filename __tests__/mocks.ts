@@ -40,6 +40,7 @@ class ServiceMock {
   save = jest.fn()
   findBy = jest.fn()
   findAllBy = jest.fn()
+  findyByUsernameAndPassword = jest.fn()
 
   constructor() { this.mockReset() }
 
@@ -48,6 +49,7 @@ class ServiceMock {
     this.save.mockReset()
     this.findBy.mockReset()
     this.findAllBy.mockReset()
+    this.findyByUsernameAndPassword.mockReset()
   }
 }
 

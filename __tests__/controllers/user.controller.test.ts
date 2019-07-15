@@ -2,7 +2,7 @@ import request from 'supertest'
 import UserController from '../../src/controllers/user.controller'
 import { UserModel } from '../../src/models/user.model'
 import Server from '../../src/server'
-import { AlreadyExistException } from '../../src/utils/model.exceptions'
+import * as exception from '../../src/utils/model.exceptions'
 import * as mocks from '../mocks'
 
 describe('validation middleware test', () => {
@@ -50,8 +50,8 @@ describe('unit test for controller', () => {
     expect(mocks.responseMock.json).toBeCalledWith(validData)
   })
 
-  const errors = [ { code: 409, error: new AlreadyExistException() }, { code: 500, error: new Error() }]
-  test.each(errors)(
+  const errorsList = [{ code: 409, error: new exception.AlreadyExistException() }, { code: 500, error: new Error() }]
+  test.each(errorsList)(
     'create endpoint should respond with an error when is throw by create method',
     async (exception) => {
       mocks.serviceMock.create.mockImplementation(() => { throw exception.error })
@@ -62,11 +62,35 @@ describe('unit test for controller', () => {
     },
   )
 
-  test('list endpoint should respond with a user list', async () => {
+  test('list endpoint should respond with an user list', async () => {
     const users = [ 'user 1', 'user 2' ]
     mocks.serviceMock.findAllBy.mockReturnValue(users)
     await controller(mocks.serviceMock).list({}, mocks.responseMock)
     expect(mocks.serviceMock.findAllBy).toBeCalledWith(UserModel)
     expect(mocks.responseMock.json).toBeCalledWith(users)
   })
+
+  test('login endpoint should respond with the logged user', async () => {
+    mocks.serviceMock.findyByUsernameAndPassword.mockReturnValue(validData)
+    await controller(mocks.serviceMock).login({ body: validData }, mocks.responseMock)
+    expect(mocks.serviceMock.findyByUsernameAndPassword).toBeCalledWith(validData.username, validData.password)
+    expect(mocks.responseMock.json).toBeCalledWith(validData)
+  })
+
+  const errorsLogin = [
+    { code: 500, error: new Error() },
+    { code: 404, error: new exception.NotFoundException() },
+    { code: 404, error: new exception.WrongPasswordException() },
+  ]
+  test.each(errorsLogin)(
+    'login endpoint should respond with an error when is throw by findByUsernameAndPassword method',
+    async (exception) => {
+      mocks.serviceMock.findyByUsernameAndPassword.mockImplementation(() => { throw exception.error })
+      await controller(mocks.serviceMock).login({ body: validData }, mocks.responseMock)
+      expect(mocks.serviceMock.findyByUsernameAndPassword).toThrow(exception.error)
+      expect(mocks.responseMock.status).toBeCalledWith(exception.code)
+      expect(mocks.responseMock.send).toBeCalledWith({errors: [exception.error]})
+    },
+  )
+
 })
