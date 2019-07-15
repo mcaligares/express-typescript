@@ -1,4 +1,4 @@
-import express, { Application, RequestHandler } from 'express'
+import express, { Application, ErrorRequestHandler, RequestHandler } from 'express'
 import mongoose from 'mongoose'
 
 export default class Server {
@@ -26,6 +26,11 @@ export default class Server {
 
   withRoute(path: string, ...handler: RequestHandler[]): Server {
     this.app.use(path, handler)
+    return this
+  }
+
+  withErrorHandler(handler: ErrorRequestHandler): Server {
+    this.app.use(handler)
     return this
   }
 

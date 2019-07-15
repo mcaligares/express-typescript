@@ -35,6 +35,8 @@ class ResponseMock {
 
 export const responseMock = new ResponseMock()
 
+export const nextMock = jest.fn()
+
 class ServiceMock {
   create = jest.fn()
   save = jest.fn()
