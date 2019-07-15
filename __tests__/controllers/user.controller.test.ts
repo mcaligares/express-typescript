@@ -13,7 +13,7 @@ describe('validation middleware test', () => {
     'controller should response with email errors',
     async (username) => {
       const data = { username, password: '1234567' }
-      const result = await controller.post('/user').send(data)
+      const result = await controller.put('/user').send(data)
       expect(result.status).toEqual(422)
       expect(result.body.errors.length).toBe(1)
       expect(result.body.errors[0].param).toEqual('username')
@@ -25,7 +25,7 @@ describe('validation middleware test', () => {
     'controller should response with password errors',
     async (password) => {
       const data = { username: 'test@email.com', password }
-      const result = await controller.post('/user').send(data)
+      const result = await controller.put('/user').send(data)
       expect(result.status).toEqual(422)
       expect(result.body.errors.length).toBe(1)
       expect(result.body.errors[0].param).toEqual('password')
@@ -67,6 +67,6 @@ describe('unit test for controller', () => {
     mocks.serviceMock.findAllBy.mockReturnValue(users)
     await controller(mocks.serviceMock).list({}, mocks.responseMock)
     expect(mocks.serviceMock.findAllBy).toBeCalledWith(UserModel)
-    expect(mocks.responseMock.json).toBeCalledWith({ users })
+    expect(mocks.responseMock.json).toBeCalledWith(users)
   })
 })
