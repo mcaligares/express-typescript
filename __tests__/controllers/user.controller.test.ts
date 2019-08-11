@@ -6,7 +6,7 @@ import * as exception from '../../src/utils/model.exceptions'
 import * as mocks from '../mocks'
 
 describe('validation middleware test', () => {
-  const server = new Server().withJson().withPort(3000).withRoute('/', new UserController().router)
+  const server = new Server().useJsonParser().withPort(3000).withRoute('/', new UserController().router)
   const controller = request(server.application)
 
   test.each(mocks.invalidEmailsList)(

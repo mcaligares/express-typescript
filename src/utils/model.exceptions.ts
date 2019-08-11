@@ -2,8 +2,10 @@ export class ErrorException extends Error {
   constructor(
     public msg: string,
     public code: number,
+    private error?: Error,
   ) {
     super(msg)
+    if (error) this.stack = error.stack
   }
 }
 

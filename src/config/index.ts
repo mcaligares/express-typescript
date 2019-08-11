@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import fs from 'fs'
+import { ErrorException } from '../utils/model.exceptions'
 
 const ENV_PATH: string = `${__dirname}/../../`
 
@@ -10,15 +11,14 @@ type IConfig = dotenv.DotenvParseOutput & {
 }
 /**
  * Load all environment variables from env file and return a `IConfig` object.
- * The method can end process with a 1 code when the `dotenv.config` method fail.
+ * The method can throw an exception when the `dotenv.config` method fail.
  * @param path Path to your env files. Default value is `${ENV_PATH}`
  */
 export function initializeConfig(path: string = ENV_PATH): IConfig {
   path += getEnvFileByEnvironment()
   const config = dotenv.config({ path })
   if (config.error) {
-    console.error(`Error reading env file ${path}. Please make sure that file exists.`, config.error)
-    process.exit(1)
+    throw new ErrorException(`Error reading env file ${path}. Please make sure that file exists.`, 1, config.error)
   }
   return overrideConfig(config.parsed as IConfig)
 }
