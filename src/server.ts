@@ -45,7 +45,8 @@ export default class Server {
       useNewUrlParser: true,
     }
     mongoose.connect(uri, options).catch((error: any) => {
-      throw new Error('MongoDB connection error. Please make sure MongoDB is running. ' + error)
+      console.error('MongoDB connection error. Please make sure MongoDB is running. ', error)
+      process.exit(-1)
     })
     return this
   }

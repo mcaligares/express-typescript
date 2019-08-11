@@ -1,11 +1,14 @@
+import { initializeConfig } from './config/'
 import UserController from './controllers/user.controller'
 import errorHandlerMiddleware from './middlewares/error.middleware'
 import Server from './server'
 
+const config = initializeConfig()
+
 const app = new Server()
-  .withPort(8080)
+  .withPort(config.PORT)
   .useJsonParser()
-  .withMongoDB('mongodb://localhost:27017/express')
+  .withMongoDB(config.MONGODB_URL)
   .withRoute('/api', new UserController().router)
   .withErrorHandler(errorHandlerMiddleware)
 
