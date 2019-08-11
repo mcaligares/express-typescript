@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node -r ts-node/register ./src/index.ts",
     "dev": "nodemon",
-    "build": "npm run lint && tsc",
+    "clean": "rm -rf ./dist",
+    "build": "npm run lint && npm run clean && tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test-coverage": "jest --collectCoverage",
     "test-watch": "jest --watch",
