@@ -34,7 +34,7 @@ export default class Server {
     return this
   }
 
-  withJson(): Server {
+  useJsonParser(): Server {
     this.app.use(express.json())
     return this
   }

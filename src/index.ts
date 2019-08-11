@@ -3,8 +3,8 @@ import errorHandlerMiddleware from './middlewares/error.middleware'
 import Server from './server'
 
 const app = new Server()
-  .withJson()
   .withPort(8080)
+  .useJsonParser()
   .withMongoDB('mongodb://localhost:27017/express')
   .withRoute('/api', new UserController().router)
   .withErrorHandler(errorHandlerMiddleware)
