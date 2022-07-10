@@ -1,23 +1,28 @@
-import { initializeConfig } from './config/'
-import UserController from './controllers/user.controller'
-import errorHandlerMiddleware from './middlewares/error.middleware'
-import Server from './server'
+require('module-alias/register');
 
-try {
-  const config = initializeConfig()
-  const { PORT, MONGODB_URL} = config
+import dotenv from 'dotenv';
+import { setupServer } from './server';
+import { initializeDB } from './db';
+import { logger } from 'services/logger.service';
 
-  const app = new Server()
-    .withPort(PORT)
-    .useJsonParser()
-    .withMongoDB(MONGODB_URL)
-    .withRoute('/api', new UserController().router)
-    .withErrorHandler(errorHandlerMiddleware)
+dotenv.config();
 
-  app.run(() => {
-    console.log(`Server running on http://localhost:${app.application.get('port')}`)
-  })
-} catch (error) {
-  console.error(error)
-  process.exit(1)
-}
+(async function init() {
+  try {
+    const port = process.env.APP_PORT;
+
+    logger.info('starting...');
+    const app = setupServer();
+
+    logger.info('initializing database...');
+    await initializeDB();
+
+    logger.info('initializing server...');
+    app.listen(port, () => {
+      logger.info(`server running in port ${port}`);
+    });
+
+  } catch (e) {
+    logger.error('ERROR starting server', e);
+  }
+})();

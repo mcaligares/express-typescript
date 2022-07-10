@@ -1,66 +1,29 @@
-import express, { Application, ErrorRequestHandler, RequestHandler } from 'express'
-import mongoose from 'mongoose'
+import cors from 'cors';
+import morgan from 'morgan';
+import compression from 'compression';
+import express, { Router, json } from 'express';
+import routes from 'routes';
+import { swaggerServe, swaggerSetup } from 'middlewares/doc.middleware';
 
-export default class Server {
-  private port: number
-  private app: Application
-  private running: boolean = false
+export function setupServer() {
+  const server = express();
+  const router = Router();
 
-  constructor(expressApplication?: Application | any) {
-   this.app = expressApplication || express()
+  if (process.env.ENV !== 'test') {
+    router.use(morgan('dev'));
   }
 
-  get isRunning() {
-    return this.running
+  router.use(json());
+  router.use(cors());
+  router.use(compression());
+
+  server.use(router);
+
+  server.use('/api', routes);
+
+  if (process.env.ENV === 'development') {
+    server.use('/doc', swaggerServe, swaggerSetup);
   }
 
-  get application(): Application {
-    return this.app
-  }
-
-  withPort(port: number): Server {
-    this.port = port
-    this.app.set('port', port)
-    return this
-  }
-
-  withRoute(path: string, ...handler: RequestHandler[]): Server {
-    this.app.use(path, handler)
-    return this
-  }
-
-  withErrorHandler(handler: ErrorRequestHandler): Server {
-    this.app.use(handler)
-    return this
-  }
-
-  useJsonParser(): Server {
-    this.app.use(express.json())
-    return this
-  }
-
-  withMongoDB(uri: string): Server {
-    const options = {
-      useCreateIndex: true,
-      useNewUrlParser: true,
-    }
-    mongoose.connect(uri, options).catch((error: any) => {
-      console.error('MongoDB connection error. Please make sure MongoDB is running. ', error)
-      process.exit(-1)
-    })
-    return this
-  }
-
-  run(callback?: Function) {
-    if (!this.port) throw new Error('Server port not defined yet.')
-
-    if (this.running) throw new Error('Server is already running.')
-
-    return new Promise((resolve) => this.app.listen(this.port, () => {
-      this.running = true
-      if (callback) callback()
-      resolve()
-    }))
-  }
-
+  return server;
 }

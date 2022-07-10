@@ -1,23 +1,30 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "target": "es5",
     "module": "commonjs",
-    "target": "es6",
-    "outDir": "dist",
-    "sourceMap": true,
-    "noImplicitAny": true,
+    "lib": ["es6"],
+    "allowJs": true,
+    "outDir": "build",
+    "rootDir": "src",
+    "strict": true,
+    "noImplicitAny": false,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "types": ["node", "@types/jest"],
+    "typeRoots": ["./node_modules/@types"],
+    "baseUrl": "./src",
+    "jsx": "react",
     "paths": {
-      "*": [ "node_modules/*" ]
+      "controllers/*": ["./controllers/*"],
+      "models/*": ["./models/*"],
+      "middlewares/*": ["./middlewares/*"],
+      "repositories/*": ["./repositories/*"],
+      "routes/*": ["./routes/*"],
+      "services/*": ["./services/*"],
+      "utils/*": ["./utils/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "__tests__/**/*"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*", "src/**/*.tsx"],
+  "exclude": ["src/**/*.spec.ts", "node_modules", "__test__"]
 }
