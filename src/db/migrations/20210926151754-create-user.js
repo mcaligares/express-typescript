@@ -17,6 +17,19 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      password: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      needChangePassword: {
+        type: Sequelize.BOOLEAN
+      },
+      confirmed: {
+        type: Sequelize.BOOLEAN
+      },
+      enabled: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

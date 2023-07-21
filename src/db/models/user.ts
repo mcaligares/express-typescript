@@ -31,6 +31,19 @@ const User = sequelize.define<UserInstance>(
     },
     name: {
       type: DataTypes.STRING,
+    },
+    password: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
+    needChangePassword: {
+      type: DataTypes.BOOLEAN,
+    },
+    confirmed: {
+      type: DataTypes.BOOLEAN,
+    },
+    enabled: {
+      type: DataTypes.BOOLEAN,
     }
   }
 );

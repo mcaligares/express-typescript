@@ -1,7 +1,8 @@
 import type { Response } from 'express';
-import { createUser, getAllUsers } from 'repositories/user.repository';
-import { Logger } from 'services/logger.service';
 import type { IUser } from '../models/i-user';
+import type { ControllerResponse, } from 'models/i-response';
+import { Logger } from 'services/logger.service';
+import { createUser, getAllUsers } from 'repositories/user.repository';
 
 const logger = new Logger('UserController');
 
@@ -15,19 +16,22 @@ const logger = new Logger('UserController');
 export async function user(user: IUser, res: Response) {
   try {
     logger.info('create new user');
-    const newUser = createUser(user);
-
-    return res.status(200).send({
+    const newUser = await createUser(user);
+    const response: ControllerResponse<IUser> = {
+      ok: true,
       message: 'User created',
-      success: 'ok',
-      user: newUser
-    });
+      result: newUser,
+    };
+
+    return res.status(200).send(response);
   } catch (e) {
     logger.error('Error creating user', e);
+    const response: ControllerResponse<never> = {
+      ok: false,
+      message: 'Error creating user',
+    };
 
-    return res.status(500).send({
-      message: 'Error creating user'
-    });
+    return res.status(500).send(response);
   }
 }
 
@@ -41,16 +45,20 @@ export async function user(user: IUser, res: Response) {
 export async function users(res: Response) {
   try {
     const users = await getAllUsers();
+    const repsonse: ControllerResponse<IUser[]> = {
+      ok: true,
+      message: 'User listed',
+      result: users,
+    };
 
-    return res.status(200).send({
-      success: 'ok',
-      users,
-    });
+    return res.status(200).send(repsonse);
   } catch (e) {
     logger.error('Error getting all users', e);
-
-    return res.status(500).send({
+    const response: ControllerResponse<never> = {
+      ok: false,
       message: 'Error getting all users',
-    });
+    };
+
+    return res.status(500).send(response);
   }
 }
