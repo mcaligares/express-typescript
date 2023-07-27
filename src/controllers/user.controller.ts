@@ -1,6 +1,6 @@
 import type { Response } from 'express';
 import type { IUser } from '../models/i-user';
-import type { ControllerResponse, } from 'models/i-response';
+import type { IResponse, } from 'models/i-response';
 import { Logger } from 'services/logger.service';
 import { createUser, getAllUsers } from 'repositories/user.repository';
 
@@ -17,7 +17,7 @@ export async function user(user: IUser, res: Response) {
   try {
     logger.info('create new user');
     const newUser = await createUser(user);
-    const response: ControllerResponse<IUser> = {
+    const response: IResponse<IUser> = {
       ok: true,
       message: 'User created',
       result: newUser,
@@ -26,7 +26,7 @@ export async function user(user: IUser, res: Response) {
     return res.status(200).send(response);
   } catch (e) {
     logger.error('Error creating user', e);
-    const response: ControllerResponse<never> = {
+    const response: IResponse<never> = {
       ok: false,
       message: 'Error creating user',
     };
@@ -45,7 +45,7 @@ export async function user(user: IUser, res: Response) {
 export async function users(res: Response) {
   try {
     const users = await getAllUsers();
-    const repsonse: ControllerResponse<IUser[]> = {
+    const repsonse: IResponse<IUser[]> = {
       ok: true,
       message: 'User listed',
       result: users,
@@ -54,7 +54,7 @@ export async function users(res: Response) {
     return res.status(200).send(repsonse);
   } catch (e) {
     logger.error('Error getting all users', e);
-    const response: ControllerResponse<never> = {
+    const response: IResponse<never> = {
       ok: false,
       message: 'Error getting all users',
     };
