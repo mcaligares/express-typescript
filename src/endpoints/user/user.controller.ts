@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import type { IUser } from '../models/i-user';
+import type { IUser } from '../../models/i-user';
 import type { IResponse, } from 'models/i-response';
 import { Logger } from 'services/logger.service';
 import { createUser, getAllUsers } from 'repositories/user.repository';
