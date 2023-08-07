@@ -4,15 +4,25 @@ import { Logger } from 'services/logger.service';
 import type { IUser } from 'models/i-user';
 import type { ISession } from 'models/i-session';
 import type { SigninWithEmailRequest, SigninWithUsernameRequest } from './signin.types';
-import * as userRepository from 'repositories/user.repository';
+import { decrypt } from 'services/crypt.service';
 import { generateToken } from 'services/token.service';
+import * as userRepository from 'repositories/user.repository';
 
 const logger = new Logger('SigninService');
 
 type Payload = SigninWithEmailRequest | SigninWithUsernameRequest;
 
-export async function signin(payload: Payload): Promise<ISession> {
-  const user = await findUser(payload);
+export async function signin(payload: Payload): Promise<ISession | undefined> {
+  const foundUser = await findUser(payload);
+  const isValid = comparePassword(payload.password, foundUser?.password);
+
+  if (!isValid) {
+    logger.debug('user not found', payload);
+
+    return undefined;
+  }
+
+  const user = { ...foundUser, password: '' } as IUser;
   const accessToken = generateAccessToken(user);
 
   logger.info('signing successfully', user);
@@ -20,14 +30,22 @@ export async function signin(payload: Payload): Promise<ISession> {
   return { user, accessToken };
 }
 
-async function findUser(payload: Payload): Promise<IUser> {
-  if ('email' in payload) {
-    return await userRepository.findUserByEmailAndPassword(payload.email, payload.password);
-  } else if ('username' in payload) {
-    return await userRepository.findUserByUsernameAndPassword(payload.username, payload.password);
-  } else {
-    throw new Error('Error getting user, expect email or username property');
+async function findUser(payload: Payload): Promise<IUser | undefined> {
+  const params = 'email' in payload ? payload : { name: payload.username };
+
+  return await userRepository.findUserByEmailOrUsername(params);
+}
+
+
+function comparePassword(password: string, encodedPassword?: string): boolean {
+  if (!encodedPassword) {
+    return false;
   }
+
+  const secretKey = process.env.SECRET_KEY as string;
+  const decodedPassword = decrypt(encodedPassword, secretKey);
+
+  return decodedPassword === password;
 }
 
 function generateAccessToken(user: IUser): string {
