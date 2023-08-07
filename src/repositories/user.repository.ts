@@ -1,7 +1,7 @@
 import { Logger } from 'services/logger.service';
-import User from '../db/models/user';
 import type { UserAttributes } from '../db/models/user';
 import type { IUser } from 'models/i-user';
+import User from '../db/models/user';
 
 const logger = new Logger('Repository - User');
 
@@ -24,14 +24,20 @@ export async function getAllUsers() {
   return await User.findAll();
 }
 
-export async function findUserByEmailAndPassword(email: string, password: string) {
-  logger.info('finding user by email and password', email);
+type EmailOrName = Partial<{ email: string, name: string }>;
 
-  return await User.findOne({ where: { email, password } });
-}
+export async function findUserByEmailOrUsername(params: EmailOrName): Promise<UserAttributes | undefined> {
+  let user: { toJSON: () => UserAttributes };
 
-export async function findUserByUsernameAndPassword(username: string, password: string) {
-  logger.info('finding user by username and password', username);
+  if (params.email) {
+    logger.info('finding user by email', params.email);
+    user = await User.findOne({ where: { email: params.email } });
+  } else if (params.name) {
+    logger.info('finding user by name', params.name);
+    user = await User.findOne({ where: { name: params.name } });
+  } else {
+    return undefined;
+  }
 
-  return await User.findOne({ where: { name: username, password } });
+  return user?.toJSON();
 }

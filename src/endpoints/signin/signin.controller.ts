@@ -19,13 +19,20 @@ export async function siginWithEmail(payload: SigninWithEmailRequest, res: Respo
     logger.info('signin with payload', payload);
 
     const sesion = await signin(payload);
-    const response: IResponse<ISession> = {
-      ok: true,
-      message: 'User signin successfully',
-      result: sesion,
-    };
 
-    return res.status(200).send(response);
+    if (sesion) {
+      const response: IResponse<ISession> = {
+        ok: true,
+        message: 'User signin successfully',
+        result: sesion,
+      };
+
+      return res.status(200).send(response);
+    }
+
+    const response: IResponse<never> = { ok: false, message: 'User not found' };
+
+    return res.status(400).send(response);
   } catch (e) {
     logger.error('Error signin', e);
     const response: IResponse<never> = { ok: false, message: 'Error signin' };

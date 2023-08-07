@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import type { IUser } from '../../models/i-user';
 import type { IResponse, } from 'models/i-response';
 import { Logger } from 'services/logger.service';
-import { createUser, getAllUsers } from 'repositories/user.repository';
+import { createNewUser, getAllUsers } from './user.service';
 
 const logger = new Logger('UserController');
 
@@ -16,7 +16,7 @@ const logger = new Logger('UserController');
 export async function user(user: IUser, res: Response) {
   try {
     logger.info('create new user');
-    const newUser = await createUser(user);
+    const newUser = await createNewUser(user);
     const response: IResponse<IUser> = {
       ok: true,
       message: 'User created',
