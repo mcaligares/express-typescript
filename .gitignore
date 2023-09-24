@@ -106,3 +106,7 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Diagram
+diagram.drawio
+.$diagram.drawio.bkp
