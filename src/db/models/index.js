@@ -9,7 +9,10 @@ const basename = path.basename(__filename);
 const config = require(__dirname + '/../config/config.js');
 const db = {};
 
-const sequelize = new Sequelize(config);
+const sequelize = new Sequelize({
+  ...config,
+  query: { raw: true }
+});
 
 fs.readdirSync(__dirname)
   .filter((file) => {

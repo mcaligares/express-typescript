@@ -1,11 +1,10 @@
 import { Logger } from 'services/logger.service';
-import type { UserAttributes } from '../db/models/user';
 import type { IUser } from 'models/i-user';
 import User from '../db/models/user';
 
 const logger = new Logger('Repository - User');
 
-export async function createUser(user: IUser) {
+export async function createUser(user: IUser): Promise<IUser> {
   logger.info('creating user', user);
 
   return await User.create({
@@ -15,13 +14,13 @@ export async function createUser(user: IUser) {
     needChangePassword: !!user.needChangePassword,
     confirmed: !!user.confirmed,
     enabled: !!user.enabled,
-  } as UserAttributes);
+  } as IUser);
 }
 
-export async function getAllUsers() {
+export async function getAllUsers(): Promise<IUser[]> {
   logger.info('getting all users');
 
-  return await User.findAll({ raw: true });
+  return await User.findAll();
 }
 
 type EmailOrUsername = Partial<{ email: string, username: string }>;
@@ -31,10 +30,10 @@ export async function findUserByEmailOrUsername(params: EmailOrUsername): Promis
 
   if (params.email) {
     logger.info('finding user by email', params.email);
-    user = await User.findOne({ raw: true, where: { email: params.email } });
+    user = await User.findOne({ where: { email: params.email } });
   } else if (params.username) {
     logger.info('finding user by name', params.username);
-    user = await User.findOne({ raw: true, where: { username: params.username } });
+    user = await User.findOne({ where: { username: params.username } });
   } else {
     return undefined;
   }

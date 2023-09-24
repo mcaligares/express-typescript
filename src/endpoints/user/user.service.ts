@@ -1,5 +1,4 @@
 import type { IUser } from 'models/i-user';
-import type { UserAttributes } from 'db/models/user';
 import { encrypt } from 'services/crypt.service';
 import * as userRepository from 'repositories/user.repository';
 
@@ -9,7 +8,7 @@ const userDefaultValues = {
   enabled: false,
 };
 
-export async function createNewUser(params: IUser): Promise<UserAttributes> {
+export async function createNewUser(params: IUser): Promise<IUser> {
   const { username, email } = params;
   const secretKey = process.env.SECRET_KEY_PASSWORD as string;
   const password = encrypt(params.password, secretKey);
@@ -18,9 +17,9 @@ export async function createNewUser(params: IUser): Promise<UserAttributes> {
 
   user.password = '';
 
-  return user.toJSON();
+  return user;
 }
 
-export function getAllUsers(): Promise<UserAttributes[]> {
+export function getAllUsers(): Promise<IUser[]> {
   return userRepository.getAllUsers();
 }
