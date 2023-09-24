@@ -11,7 +11,7 @@ export interface IUser {
 
 export const UserSchema = Joi.object<IUser>({
   email: Joi.string().required(),
-  username: Joi.string().min(3).optional(),
+  username: Joi.string().min(3).required(),
   password: Joi.string().required().min(6),
   needChangePassword: Joi.boolean().optional(),
 });
