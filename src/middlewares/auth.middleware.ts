@@ -12,7 +12,7 @@ export function authMiddleware(req: IRequest, res: Response, next: NextFunction)
   logger.debug('authenticating request...');
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const secretKey = process.env.ACCESS_TOKEN_SECRET_KEY as string;
+  const secretKey = process.env.SECRET_KEY_TOKEN as string;
 
   if (!token) {
     logger.debug('token is empty or invalid');

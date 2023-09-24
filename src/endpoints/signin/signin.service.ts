@@ -48,14 +48,14 @@ function comparePassword(password: string, encodedPassword?: string): boolean {
     return false;
   }
 
-  const secretKey = process.env.SECRET_KEY as string;
+  const secretKey = process.env.SECRET_KEY_PASSWORD as string;
   const decodedPassword = decrypt(encodedPassword, secretKey);
 
   return decodedPassword === password;
 }
 
 function generateAccessToken(user: IUser): string {
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET_KEY as string;
+  const accessTokenSecret = process.env.SECRET_KEY_TOKEN as string;
 
   return generateToken(user, accessTokenSecret);
 }
