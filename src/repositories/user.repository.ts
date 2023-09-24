@@ -10,7 +10,7 @@ export async function createUser(user: IUser) {
 
   return await User.create({
     email: user.email,
-    name: user.name,
+    username: user.username,
     password: user.password,
     needChangePassword: !!user.needChangePassword,
     confirmed: !!user.confirmed,
@@ -21,23 +21,23 @@ export async function createUser(user: IUser) {
 export async function getAllUsers() {
   logger.info('getting all users');
 
-  return await User.findAll();
+  return await User.findAll({ raw: true });
 }
 
-type EmailOrName = Partial<{ email: string, name: string }>;
+type EmailOrUsername = Partial<{ email: string, username: string }>;
 
-export async function findUserByEmailOrUsername(params: EmailOrName): Promise<UserAttributes | undefined> {
-  let user: { toJSON: () => UserAttributes };
+export async function findUserByEmailOrUsername(params: EmailOrUsername): Promise<IUser | undefined> {
+  let user: IUser;
 
   if (params.email) {
     logger.info('finding user by email', params.email);
-    user = await User.findOne({ where: { email: params.email } });
-  } else if (params.name) {
-    logger.info('finding user by name', params.name);
-    user = await User.findOne({ where: { name: params.name } });
+    user = await User.findOne({ raw: true, where: { email: params.email } });
+  } else if (params.username) {
+    logger.info('finding user by name', params.username);
+    user = await User.findOne({ raw: true, where: { username: params.username } });
   } else {
     return undefined;
   }
 
-  return user?.toJSON();
+  return user;
 }

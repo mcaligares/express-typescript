@@ -1,8 +1,8 @@
 import type { Response } from 'express';
 import type { IUser } from '../../models/i-user';
-import type { IResponse, } from 'models/i-response';
 import { Logger } from 'services/logger.service';
 import { createNewUser, getAllUsers } from './user.service';
+import { createResponse } from 'services/controller.service';
 
 const logger = new Logger('UserController');
 
@@ -17,21 +17,15 @@ export async function user(user: IUser, res: Response) {
   try {
     logger.info('create new user');
     const newUser = await createNewUser(user);
-    const response: IResponse<IUser> = {
-      ok: true,
-      message: 'User created',
-      result: newUser,
-    };
 
-    return res.status(200).send(response);
+    return createResponse(200, true)
+      .withMessage('User created')
+      .withResult(newUser)
+      .send(res);
   } catch (e) {
     logger.error('Error creating user', e);
-    const response: IResponse<never> = {
-      ok: false,
-      message: 'Error creating user',
-    };
 
-    return res.status(500).send(response);
+    return createResponse(500, false).withMessage('Error creating user').send(res);
   }
 }
 
@@ -45,20 +39,14 @@ export async function user(user: IUser, res: Response) {
 export async function users(res: Response) {
   try {
     const users = await getAllUsers();
-    const repsonse: IResponse<IUser[]> = {
-      ok: true,
-      message: 'User listed',
-      result: users,
-    };
 
-    return res.status(200).send(repsonse);
+    return createResponse(200, true)
+      .withMessage('User listed')
+      .withResult(users)
+      .send(res);
   } catch (e) {
     logger.error('Error getting all users', e);
-    const response: IResponse<never> = {
-      ok: false,
-      message: 'Error getting all users',
-    };
 
-    return res.status(500).send(response);
+    return createResponse(500, false).withMessage('Error getting all users').send(res);
   }
 }
