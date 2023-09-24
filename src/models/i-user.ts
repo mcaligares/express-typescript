@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export interface IUser {
   email: string
-  name: string
+  username: string
   password: string
   needChangePassword: boolean
   confirmed: boolean
@@ -11,7 +11,7 @@ export interface IUser {
 
 export const UserSchema = Joi.object<IUser>({
   email: Joi.string().required(),
-  name: Joi.string().min(3).optional(),
+  username: Joi.string().min(3).optional(),
   password: Joi.string().required().min(6),
   needChangePassword: Joi.boolean().optional(),
 });

@@ -31,7 +31,13 @@ export async function signin(payload: Payload): Promise<ISession | undefined> {
 }
 
 async function findUser(payload: Payload): Promise<IUser | undefined> {
-  const params = 'email' in payload ? payload : { name: payload.username };
+  const params: Partial<{ email: string, username: string }> = {};
+
+  if ('email' in payload) {
+    params.email = payload.email;
+  } else {
+    params.username = payload.username;
+  }
 
   return await userRepository.findUserByEmailOrUsername(params);
 }

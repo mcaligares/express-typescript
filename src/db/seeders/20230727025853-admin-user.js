@@ -5,8 +5,9 @@ module.exports = {
     return queryInterface.bulkInsert('Users', [
       {
         email: 'admin@mail.com',
-        password: '123456',
-        needChangePassword: false,
+        username: 'admin',
+        password: 'U2FsdGVkX1/fI+kACRNjHQWmO+kEuffzBpOvWkLWQ0w=', //123456
+        needChangePassword: true,
         confirmed: true,
         enabled: true,
         createdAt: new Date(),

@@ -10,10 +10,10 @@ const userDefaultValues = {
 };
 
 export async function createNewUser(params: IUser): Promise<UserAttributes> {
-  const { name, email } = params;
+  const { username, email } = params;
   const secretKey = process.env.SECRET_KEY as string;
   const password = encrypt(params.password, secretKey);
-  const newUser: IUser = { ...userDefaultValues, name, email, password };
+  const newUser: IUser = { ...userDefaultValues, username, email, password };
   const user = await userRepository.createUser(newUser);
 
   user.password = '';
