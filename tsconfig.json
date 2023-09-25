@@ -26,6 +26,6 @@
       "@/utils/*": ["./utils/*"]
     }
   },
-  "include": ["src/**/*", "src/**/*.tsx"],
-  "exclude": ["src/**/*.spec.ts", "node_modules", "__test__"]
+  "include": ["src/**/*", "src/**/*.tsx", "__test__"],
+  "exclude": ["src/**/*.spec.ts", "node_modules"]
 }

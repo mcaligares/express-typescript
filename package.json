@@ -9,10 +9,9 @@
     "start": "npm run build && node build/index.js",
     "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
     "lint": "eslint . --ext .ts",
-    "test": "jest --verbose",
-    "test:coverage": "jest --verbose --detectOpenHandles --silent --coverage",
-    "test:dev": "jest --watchAll",
-    "test:watch": "npm run test -- --watch",
+    "test": "DOTENV_CONFIG_PATH=.env.test jest --verbose --setupFiles dotenv/config",
+    "test:coverage": "npm run test -- --detectOpenHandles --silent --coverage",
+    "test:dev": "npm run test -- --watchAll",
     "sequelize": "sequelize"
   },
   "husky": {

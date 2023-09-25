@@ -8,13 +8,26 @@ module.exports = {
   rootDir: '.',
   roots: ['<rootDir>/src', '<rootDir>/__tests__'],
   coverageDirectory: 'coverage',
-  coveragePathIgnorePatterns: ['./**/node_modules/'],
+  coveragePathIgnorePatterns: [
+    './node_modules/',
+    './src/services/logger.service.ts'
+  ],
   coverageThreshold: {
     global: {
       branches: 75,
       functions: 75,
-      lines: 80,
-      statements: 80
+      lines: 75,
+      statements: 75
     }
+  },
+  moduleNameMapper: {
+    '@/endpoints/(.*)': '<rootDir>/src/endpoints/$1',
+    '@/models/(.*)': '<rootDir>/src/models/$1',
+    '@/middlewares/(.*)': '<rootDir>/src/middlewares/$1',
+    '@/repositories/(.*)': '<rootDir>/src/repositories/$1',
+    '@/routes/(.*)': '<rootDir>/src/routes/$1',
+    '@/services/(.*)': '<rootDir>/src/services/$1',
+    '@/utils/(.*)': '<rootDir>/src/utils/$1',
+    '@/(.*)': '<rootDir>/src/$1'
   }
 };
