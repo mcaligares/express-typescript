@@ -13,7 +13,8 @@
     "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "simple-import-sort"
   ],
   "rules": {
     "no-console": "warn",
@@ -38,7 +39,9 @@
     "@typescript-eslint/padding-line-between-statements": [
       "error",
       { "blankLine": "always", "prev": "*", "next": ["interface", "type", "export"] }
-    ]
+    ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
   "settings": {
     "import/resolver": {
@@ -50,13 +53,13 @@
       },
       "alias": {
         "map": [
-          [ "controllers", "./src/controllers" ],
-          [ "models", "./src/models" ],
-          [ "middlewares", "./src/middlewares" ],
-          [ "repositories", "./src/repositories" ],
-          [ "routes", "./src/routes" ],
-          [ "services", "./src/services" ],
-          [ "utils", "./src/utils" ]
+          [ "@/endpoints", "./src/endpoints" ],
+          [ "@/models", "./src/models" ],
+          [ "@/middlewares", "./src/middlewares" ],
+          [ "@/repositories", "./src/repositories" ],
+          [ "@/routes", "./src/routes" ],
+          [ "@/services", "./src/services" ],
+          [ "@/utils", "./src/utils" ]
         ],
         "extensions": [
           ".ts",

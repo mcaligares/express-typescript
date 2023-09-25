@@ -1,6 +1,7 @@
-import type { Schema } from 'joi';
 import type { NextFunction, Request, Response } from 'express';
-import { logger } from 'services/logger.service';
+import type { Schema } from 'joi';
+
+import { logger } from '@/services/logger.service';
 
 const defaultOptions = {
   abortEarly: false, // include all errors

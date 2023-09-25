@@ -1,6 +1,6 @@
-import type { IUser } from 'models/i-user';
-import { encrypt } from 'services/crypt.service';
-import * as userRepository from 'repositories/user.repository';
+import type { IUser } from '@/models/i-user';
+import * as userRepository from '@/repositories/user.repository';
+import { encrypt } from '@/services/crypt.service';
 
 const userDefaultValues = {
   needChangePassword: false,

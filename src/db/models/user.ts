@@ -1,7 +1,8 @@
-import { sequelize } from '.';
+import type { IUser } from 'models/i-user';
 import type { Model, Optional } from 'sequelize';
 import { DataTypes } from 'sequelize';
-import type { IUser } from 'models/i-user';
+
+import { sequelize } from '.';
 
 export type UserAttributes = IUser & {
   id: string

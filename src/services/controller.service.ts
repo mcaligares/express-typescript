@@ -1,5 +1,6 @@
 import type { Response } from 'express';
-import type { IResponse } from 'models/i-response';
+
+import type { IResponse } from '@/models/i-response';
 
 class ControllerResponse<T> {
   private message?: string;

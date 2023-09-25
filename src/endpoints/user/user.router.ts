@@ -1,9 +1,11 @@
+import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import type { IRequest } from 'models/i-request';
-import { UserSchema } from 'models/i-user';
-import { authMiddleware } from 'middlewares/auth.middleware';
-import { validationMiddleware } from 'middlewares/validation.middleware';
+
+import { authMiddleware } from '@/middlewares/auth.middleware';
+import { validationMiddleware } from '@/middlewares/validation.middleware';
+import type { IRequest } from '@/models/i-request';
+import { UserSchema } from '@/models/i-user';
+
 import * as userController from './user.controller';
 
 const router = Router();

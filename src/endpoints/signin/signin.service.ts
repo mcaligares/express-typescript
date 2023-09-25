@@ -1,12 +1,13 @@
 require('dotenv').config();
 
-import { Logger } from 'services/logger.service';
-import type { IUser } from 'models/i-user';
-import type { ISession } from 'models/i-session';
+import type { ISession } from '@/models/i-session';
+import type { IUser } from '@/models/i-user';
+import * as userRepository from '@/repositories/user.repository';
+import { decrypt } from '@/services/crypt.service';
+import { Logger } from '@/services/logger.service';
+import { generateToken } from '@/services/token.service';
+
 import type { SigninWithEmailRequest, SigninWithUsernameRequest } from './signin.types';
-import { decrypt } from 'services/crypt.service';
-import { generateToken } from 'services/token.service';
-import * as userRepository from 'repositories/user.repository';
 
 const logger = new Logger('SigninService');
 

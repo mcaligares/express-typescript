@@ -1,8 +1,10 @@
 import type { Response } from 'express';
-import type { IUser } from '../../models/i-user';
-import { Logger } from 'services/logger.service';
+
+import type { IUser } from '@/models/i-user';
+import { createResponse } from '@/services/controller.service';
+import { Logger } from '@/services/logger.service';
+
 import { createNewUser, getAllUsers } from './user.service';
-import { createResponse } from 'services/controller.service';
 
 const logger = new Logger('UserController');
 

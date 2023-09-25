@@ -1,5 +1,6 @@
 import crypto from 'crypto-js/';
-import { Logger } from './logger.service';
+
+import { Logger } from '@/services/logger.service';
 
 const logger = new Logger('CryptService');
 

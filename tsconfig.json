@@ -16,13 +16,14 @@
     "baseUrl": "./src",
     "jsx": "react",
     "paths": {
-      "controllers/*": ["./controllers/*"],
-      "models/*": ["./models/*"],
-      "middlewares/*": ["./middlewares/*"],
-      "repositories/*": ["./repositories/*"],
-      "routes/*": ["./routes/*"],
-      "services/*": ["./services/*"],
-      "utils/*": ["./utils/*"]
+      "@/endpoints/*": ["./endpoints/*"],
+      "@/models/*": ["./models/*"],
+      "@/middlewares/*": ["./middlewares/*"],
+      "@/repositories/*": ["./repositories/*"],
+      "@/routes": ["./routes/index"],
+      "@/routes/*": ["./routes/*"],
+      "@/services/*": ["./services/*"],
+      "@/utils/*": ["./utils/*"]
     }
   },
   "include": ["src/**/*", "src/**/*.tsx"],

@@ -1,9 +1,10 @@
-import cors from 'cors';
-import morgan from 'morgan';
 import compression from 'compression';
-import express, { Router, json } from 'express';
-import routes from 'routes';
-import { swaggerServe, swaggerSetup } from 'middlewares/doc.middleware';
+import cors from 'cors';
+import express, { json, Router } from 'express';
+import morgan from 'morgan';
+
+import { swaggerServe, swaggerSetup } from '@/middlewares/doc.middleware';
+import routes from '@/routes';
 
 export function setupServer() {
   const server = express();

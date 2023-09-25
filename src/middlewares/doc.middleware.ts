@@ -2,7 +2,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 
 const options: swaggerJSDoc.Options = {
-  apis: ['./src/controllers/*.ts'],
+  apis: ['./src/endpoints/*.ts'],
   swaggerDefinition: {
     info: {
       title: 'Express API',

@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { Logger } from './logger.service';
+
+import { Logger } from '@/services/logger.service';
 
 const logger = new Logger('TokenService');
 

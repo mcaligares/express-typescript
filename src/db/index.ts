@@ -1,5 +1,6 @@
+import { logger } from '@/services/logger.service';
+
 import { sequelize } from './models';
-import { logger } from 'services/logger.service';
 
 export async function initializeDB() {
   try {

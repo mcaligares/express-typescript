@@ -1,4 +1,4 @@
-import type { IUser } from './i-user';
+import type { IUser } from '@/models/i-user';
 
 export type ISession = {
   user: IUser

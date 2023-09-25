@@ -1,10 +1,11 @@
 require('dotenv').config();
 
 import type { NextFunction, Response } from 'express';
-import type { IRequest } from 'models/i-request';
-import type { ISession } from 'models/i-session';
-import { Logger } from 'services/logger.service';
-import { decodeToken } from 'services/token.service';
+
+import type { IRequest } from '@/models/i-request';
+import type { ISession } from '@/models/i-session';
+import { Logger } from '@/services/logger.service';
+import { decodeToken } from '@/services/token.service';
 
 const logger = new Logger('AuthMiddleware');
 

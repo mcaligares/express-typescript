@@ -1,5 +1,7 @@
-import { Logger } from 'services/logger.service';
 import type { IUser } from 'models/i-user';
+
+import { Logger } from '@/services/logger.service';
+
 import User from '../db/models/user';
 
 const logger = new Logger('Repository - User');

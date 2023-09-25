@@ -1,9 +1,11 @@
 require('module-alias/register');
 
 import dotenv from 'dotenv';
-import { setupServer } from './server';
+
+import { logger } from '@/services/logger.service';
+
 import { initializeDB } from './db';
-import { logger } from 'services/logger.service';
+import { setupServer } from './server';
 
 dotenv.config();
 

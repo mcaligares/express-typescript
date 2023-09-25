@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import userRouter from '../endpoints/user/user.router';
-import signinRouter from '../endpoints/signin/signin.router';
+
+import signinRouter from '@/endpoints/signin/signin.router';
+import userRouter from '@/endpoints/user/user.router';
 
 const router = Router();
 
