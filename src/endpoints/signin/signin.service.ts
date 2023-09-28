@@ -15,7 +15,14 @@ type Payload = SigninWithEmailRequest | SigninWithUsernameRequest;
 
 export async function signin(payload: Payload): Promise<ISession | undefined> {
   const foundUser = await findUser(payload);
-  const isValid = comparePassword(payload.password, foundUser?.password);
+
+  if (!foundUser) {
+    logger.debug('user not found', payload);
+
+    return undefined;
+  }
+
+  const isValid = comparePassword(payload.password, foundUser.password);
 
   if (!isValid) {
     logger.debug('user not found', payload);
@@ -43,12 +50,7 @@ async function findUser(payload: Payload): Promise<IUser | undefined> {
   return await userRepository.findUserByEmailOrUsername(params);
 }
 
-
-function comparePassword(password: string, encodedPassword?: string): boolean {
-  if (!encodedPassword) {
-    return false;
-  }
-
+function comparePassword(password: string, encodedPassword: string): boolean {
   const secretKey = process.env.SECRET_KEY_PASSWORD as string;
   const decodedPassword = decrypt(encodedPassword, secretKey);
 
