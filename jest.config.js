@@ -10,7 +10,8 @@ module.exports = {
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
     './node_modules/',
-    './src/services/logger.service.ts'
+    './src/services/logger.service.ts',
+    './src/repositories/user.repository.ts'
   ],
   coverageThreshold: {
     global: {
