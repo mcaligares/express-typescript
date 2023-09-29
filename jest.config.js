@@ -9,6 +9,7 @@ module.exports = {
   roots: ['<rootDir>/src', '<rootDir>/__tests__'],
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: [
+    '.js',
     './node_modules/',
     './src/services/logger.service.ts',
     './src/repositories/user.repository.ts'
