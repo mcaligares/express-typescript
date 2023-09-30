@@ -32,12 +32,15 @@ module.exports = {
       enabled: {
         type: Sequelize.BOOLEAN
       },
-      createdAt: {
+      creationDate: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updatedOn: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletionDate: {
         type: Sequelize.DATE
       }
     });

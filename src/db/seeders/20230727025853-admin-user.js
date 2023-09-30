@@ -10,8 +10,8 @@ module.exports = {
         needChangePassword: true,
         confirmed: true,
         enabled: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        creationDate: new Date(),
+        updatedOn: new Date()
       }
     ]);
   },

@@ -2,7 +2,7 @@ import type { IUser } from 'models/i-user';
 
 import { Logger } from '@/services/logger.service';
 
-import User from '../db/models/user';
+import User from '../db/models/User';
 
 const logger = new Logger('Repository - User');
 
@@ -28,7 +28,7 @@ export async function getAllUsers(): Promise<IUser[]> {
 type EmailOrUsername = Partial<{ email: string, username: string }>;
 
 export async function findUserByEmailOrUsername(params: EmailOrUsername): Promise<IUser | undefined> {
-  let user: IUser;
+  let user: User | null;
 
   if (params.email) {
     logger.info('finding user by email', params.email);
@@ -40,5 +40,5 @@ export async function findUserByEmailOrUsername(params: EmailOrUsername): Promis
     return undefined;
   }
 
-  return user;
+  return user ? user as IUser : undefined;
 }
