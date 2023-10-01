@@ -2,6 +2,8 @@ import type { Response } from 'express';
 
 import type { IResponse } from '@/models/i-response';
 
+import type { Logger } from './logger.service';
+
 class ControllerResponse<T> {
   private message?: string;
   private result?: T;
@@ -31,6 +33,12 @@ class ControllerResponse<T> {
     };
 
     return res.status(this.code).send(obj);
+  }
+
+  withLogger(logger: Logger) {
+    logger.debug('sending response', this);
+
+    return this;
   }
 }
 

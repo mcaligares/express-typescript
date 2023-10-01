@@ -3,8 +3,9 @@ import type { Response } from 'express';
 import type { IUser } from '@/models/i-user';
 import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
+import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { createNewUser, getAllUsers } from './user.service';
+import { createUser, getAllUsers } from './user.service';
 
 const logger = new Logger('UserController');
 
@@ -17,17 +18,23 @@ const logger = new Logger('UserController');
 */
 export async function user(user: IUser, res: Response) {
   try {
-    logger.info('create new user');
-    const newUser = await createNewUser(user);
+    logger.info('creating new user', obfuscatePassword(user));
+    const newUser = await createUser(user);
+
+    logger.info('created user', newUser);
 
     return createResponse(200, true)
-      .withMessage('User created')
+      .withMessage('user created successfully')
       .withResult(newUser)
+      .withLogger(logger)
       .send(res);
   } catch (e) {
-    logger.error('Error creating user', e);
+    logger.error('Error creating user', user, e);
 
-    return createResponse(500, false).withMessage('Error creating user').send(res);
+    return createResponse(500, false)
+      .withMessage('Error creating user')
+      .withLogger(logger)
+      .send(res);
   }
 }
 
@@ -40,15 +47,20 @@ export async function user(user: IUser, res: Response) {
 */
 export async function users(res: Response) {
   try {
+    logger.info('getting users');
     const users = await getAllUsers();
 
     return createResponse(200, true)
-      .withMessage('User listed')
+      .withMessage('users obtained successfully')
       .withResult(users)
+      .withLogger(logger)
       .send(res);
   } catch (e) {
     logger.error('Error getting all users', e);
 
-    return createResponse(500, false).withMessage('Error getting all users').send(res);
+    return createResponse(500, false)
+      .withMessage('Error getting all users')
+      .withLogger(logger)
+      .send(res);
   }
 }
