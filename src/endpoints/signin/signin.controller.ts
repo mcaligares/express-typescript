@@ -2,6 +2,7 @@ import type { Response } from 'express';
 
 import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
+import { obfuscatePassword } from '@/utils/parse.utils';
 
 import { signin } from './signin.service';
 import type { SigninWithEmailRequest, SigninWithUsernameRequest } from './signin.types';
@@ -17,28 +18,17 @@ const logger = new Logger('SigninController');
 */
 export async function signinWithEmail(payload: SigninWithEmailRequest, res: Response) {
   try {
-    logger.info('signin with payload', payload.email);
+    logger.info('signin with email', obfuscatePassword(payload));
 
-    const session = await signin(payload);
-
-    if (!session) {
-      logger.info('signin failed', payload.email);
-
-      return createResponse(400, false)
-        .withMessage('User not found')
-        .send(res);
-    }
-
-    logger.info('signin done', payload.email);
-
-    return createResponse(200, true)
-      .withMessage('signin successfully')
-      .withResult(session)
-      .send(res);
+    return await signinWithPayload(payload, res);
   } catch (e) {
-    logger.error('Error signin', e);
+    logger.info('error -----', e);
+    logger.error('Error signin with email', payload, e);
 
-    return createResponse(500, false).withMessage('Error signin').send(res);
+    return createResponse(500, false)
+      .withMessage('unexpected error')
+      .withLogger(logger)
+      .send(res);
   }
 }
 
@@ -51,27 +41,36 @@ export async function signinWithEmail(payload: SigninWithEmailRequest, res: Resp
 */
 export async function signinWithUsername(payload: SigninWithUsernameRequest, res: Response) {
   try {
-    logger.info('signin with payload', payload.username);
+    logger.info('signin with username', obfuscatePassword(payload));
 
-    const session = await signin(payload);
-
-    if (!session) {
-      logger.info('signin failed', payload.username);
-
-      return createResponse(400, false)
-        .withMessage('User not found')
-        .send(res);
-    }
-
-    logger.info('signin done', payload.username);
-
-    return createResponse(200, true)
-      .withMessage('User signin successfully')
-      .withResult(session)
-      .send(res);
+    return await signinWithPayload(payload, res);
   } catch (e) {
-    logger.error('signin error', e);
+    logger.error('Error signin with username', payload, e);
 
-    return createResponse(500, false).withMessage('Error signin').send(res);
+    return createResponse(500, false)
+      .withMessage('unexpected error')
+      .withLogger(logger)
+      .send(res);
   }
+}
+
+async function signinWithPayload(payload: SigninWithEmailRequest | SigninWithUsernameRequest, res: Response) {
+  const session = await signin(payload);
+
+  if (!session) {
+    logger.info('failed login', obfuscatePassword(payload));
+
+    return createResponse(400, false)
+      .withMessage('invalid email or password')
+      .withLogger(logger)
+      .send(res);
+  }
+
+  logger.info('successful login', obfuscatePassword(payload));
+
+  return createResponse(200, true)
+    .withMessage('user logged successfully')
+    .withResult(session)
+    .withLogger(logger)
+    .send(res);
 }

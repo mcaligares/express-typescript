@@ -6,6 +6,7 @@ import * as userRepository from '@/repositories/user.repository';
 import { decrypt } from '@/services/crypt.service';
 import { Logger } from '@/services/logger.service';
 import { generateToken } from '@/services/token.service';
+import { obfuscatePassword } from '@/utils/parse.utils';
 
 import type { SigninWithEmailRequest, SigninWithUsernameRequest } from './signin.types';
 
@@ -17,7 +18,7 @@ export async function signin(payload: Payload): Promise<ISession | undefined> {
   const foundUser = await findUser(payload);
 
   if (!foundUser) {
-    logger.debug('user not found', payload);
+    logger.debug('wrong email or username', payload);
 
     return undefined;
   }
@@ -25,15 +26,15 @@ export async function signin(payload: Payload): Promise<ISession | undefined> {
   const isValid = comparePassword(payload.password, foundUser.password);
 
   if (!isValid) {
-    logger.debug('user not found', payload);
+    logger.debug('wrong password', payload);
 
     return undefined;
   }
 
-  const user = { ...foundUser, password: '' } as IUser;
+  const user = obfuscatePassword(foundUser);
   const accessToken = generateAccessToken(user);
 
-  logger.info('signing successfully', user);
+  logger.debug('logged user and generated access token', user);
 
   return { user, accessToken };
 }

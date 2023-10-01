@@ -12,10 +12,13 @@ const createResponseMock = createResponse as jest.Mock;
 
 const createResponseImplementation = (sendMock: CallableFunction) => {
   const withResultMock = () => {
-    return { withMessage: withMessageMock, send: sendMock };
+    return { withMessage: withMessageMock, withLogger: withLoggerMock, send: sendMock };
   };
   const withMessageMock = () => {
-    return { withResult: withResultMock, send: sendMock };
+    return { withResult: withResultMock, withLogger: withLoggerMock, send: sendMock };
+  };
+  const withLoggerMock = () => {
+    return { send: sendMock };
   };
 
   return () => ({ withMessage: withMessageMock, withResult: withResultMock });

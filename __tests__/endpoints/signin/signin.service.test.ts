@@ -22,7 +22,7 @@ describe('test signin service', () => {
     const password = '1234';
     const accessToken = '';
     const payload = { email, password };
-    const payloadWithoutPass = { email, password: '' };
+    const payloadWithoutPass = { email, password: '******' };
     const expectedResult = { accessToken, user: payloadWithoutPass };
 
     decryptMock.mockImplementationOnce(() => password);
