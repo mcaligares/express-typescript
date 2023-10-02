@@ -5,7 +5,8 @@ import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { createUser, getAllUsers } from './user.service';
+import { createConfirmationToken, createUser, getAllUsers, withTransaction } from './user.service';
+import type { UserTransactionResult } from './user.types';
 
 const logger = new Logger('UserController');
 
@@ -19,13 +20,19 @@ const logger = new Logger('UserController');
 export async function user(user: IUser, res: Response) {
   try {
     logger.info('creating new user', obfuscatePassword(user));
-    const newUser = await createUser(user);
 
-    logger.info('created user', newUser);
+    const result = await withTransaction(async (transaction) => {
+      const newUser = await createUser(user, transaction);
+      const userToken = await createConfirmationToken(newUser, transaction);
+
+      return { user: newUser, userToken } as UserTransactionResult;
+    });
+
+    logger.info('created user and token in transaction', result);
 
     return createResponse(200, true)
       .withMessage('user created successfully')
-      .withResult(newUser)
+      .withResult(result.user)
       .withLogger(logger)
       .send(res);
   } catch (e) {
