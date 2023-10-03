@@ -9,9 +9,8 @@ import { getNextDayAt } from '@/utils/date.utils';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import { getConnection } from '../../db';
-import type { UserTransactionResult } from './user.types';
 
-type TransactionCallback = (transaction: Transaction) => Promise<UserTransactionResult>;
+type TransactionCallback<T> = (transaction: Transaction) => Promise<T>;
 
 const USER_DEFAULT_VALUES = {
   needChangePassword: false,
@@ -19,7 +18,7 @@ const USER_DEFAULT_VALUES = {
   enabled: false,
 };
 
-export async function withTransaction(callback: TransactionCallback) {
+export async function withTransaction<T>(callback: TransactionCallback<T>) {
   const sequelize = getConnection();
 
   return await sequelize.transaction(async (t) => callback(t));
@@ -42,6 +41,29 @@ export async function createConfirmationToken(params: IUserWithID, transaction: 
   const userToken: IUserToken = { userId, token, type: 'confirmation-email', expiresIn };
 
   return await userRepository.createUserToken(userToken, transaction);
+}
+
+export async function confirmUserAccount(token: string) {
+  const userToken = await userRepository.findUserToken(token);
+
+  if (!userToken) {
+    return false;
+  }
+  if (userToken.expiresIn < new Date()) {
+    await userRepository.deleteUserToken(userToken.id);
+
+    return false;
+  }
+
+  await withTransaction(async (transaction) => {
+    await userRepository.confirmUserToken({
+      userId: userToken.userId,
+      userTokenId: userToken.id,
+      transaction,
+    });
+  });
+
+  return true;
 }
 
 export function getAllUsers(): Promise<IUser[]> {

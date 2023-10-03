@@ -5,7 +5,7 @@ import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { createConfirmationToken, createUser, getAllUsers, withTransaction } from './user.service';
+import { confirmUserAccount, createConfirmationToken, createUser, getAllUsers, withTransaction } from './user.service';
 import type { UserTransactionResult } from './user.types';
 
 const logger = new Logger('UserController');
@@ -40,6 +40,41 @@ export async function user(user: IUser, res: Response) {
 
     return createResponse(500, false)
       .withMessage('Error creating user')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+
+/**
+ * @swagger
+ * /confirm:
+ *   post:
+ *     summary: confirm user account
+ *     description: confirm user account
+*/
+export async function confirm(token: string, res: Response) {
+  try {
+    logger.info('confirmating user token', token);
+
+    const result = await confirmUserAccount(token);
+
+    if (!result) {
+      return createResponse(403, false)
+        .withMessage('invalid user token')
+        .withLogger(logger)
+        .send(res);
+    }
+
+    return createResponse(200, true)
+      .withMessage('user confirmed successfully')
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error confirming user token', token, e);
+
+    return createResponse(500, false)
+      .withMessage('Error confirming user token')
       .withLogger(logger)
       .send(res);
   }

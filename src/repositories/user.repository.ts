@@ -34,6 +34,37 @@ export async function createUserToken(userToken: IUserToken, transaction?: Trans
   }, { transaction }) as IUserTokenWithID;
 }
 
+export async function findUserToken(userToken: string) {
+  logger.debug('finding user token', userToken);
+
+  return await UserToken.findOne({
+    where: { token: userToken }
+  }) as IUserTokenWithID;
+}
+
+type ConfirmParams = {
+  userId: number
+  userTokenId: number
+  transaction: Transaction
+}
+
+export async function confirmUserToken(params: ConfirmParams) {
+  await deleteUserToken(params.userTokenId, params.transaction);
+  await User.update({
+    confirmed: true
+  }, {
+    where: { id: params.userId },
+    transaction: params.transaction,
+  });
+}
+
+export async function deleteUserToken(userTokenId: number, transaction?: Transaction) {
+  await UserToken.destroy({
+    where: { id: userTokenId },
+    transaction: transaction,
+  });
+}
+
 export async function getAllUsers(): Promise<IUser[]> {
   logger.debug('getting all users');
 
