@@ -58,6 +58,20 @@ export async function confirmUserToken(params: ConfirmParams) {
   });
 }
 
+type SetPasswordParams = ConfirmParams & {
+  password: string
+}
+
+export async function setPasswordWithUserToken(params: SetPasswordParams) {
+  await deleteUserToken(params.userTokenId, params.transaction);
+  await User.update({
+    password: params.password
+  }, {
+    where: { id: params.userId },
+    transaction: params.transaction,
+  });
+}
+
 export async function deleteUserToken(userTokenId: number, transaction?: Transaction) {
   await UserToken.destroy({
     where: { id: userTokenId },

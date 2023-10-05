@@ -3,3 +3,9 @@ export function getNextDayAt(date: Date): Date {
 
   return date;
 }
+
+export function getDaysAt(date: Date, days: number): Date {
+  date.setDate(date.getDate() + days);
+
+  return date;
+}

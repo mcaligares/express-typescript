@@ -5,7 +5,7 @@ import { authMiddleware } from '@/middlewares/auth.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import type { IRequest } from '@/models/i-request';
 import { UserSchema } from '@/models/i-user';
-import { UserTokenSchema } from '@/models/i-user-token';
+import { ChangePasswordUserTokenSchema, ConfirmationUserTokenSchema } from '@/models/i-user-token';
 
 import * as userController from './user.controller';
 
@@ -30,13 +30,22 @@ router.get(
   (req: Request, res: Response) => userController.users(res)
 );
 
-const userTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
-  validationMiddleware(req, res, next, UserTokenSchema);
+const confirmationUserTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+  validationMiddleware(req, res, next, ConfirmationUserTokenSchema);
 
 router.post(
   '/confirm',
-  userTokenValidationHandler,
-  (req: Request, res: Response) => userController.confirm(req.body.token, res)
+  confirmationUserTokenValidationHandler,
+  (req: Request, res: Response) => userController.confirm(req.body, res)
+);
+
+const changePasswordUserTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+  validationMiddleware(req, res, next, ChangePasswordUserTokenSchema);
+
+router.post(
+  '/confirm',
+  changePasswordUserTokenValidationHandler,
+  (req: Request, res: Response) => userController.confirm(req.body, res)
 );
 
 export default router;
