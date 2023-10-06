@@ -3,7 +3,7 @@ import type { IUser } from 'models/i-user';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import User from '../db/models/User';
+import User from '../db/models/user';
 
 const logger = new Logger('UserRespository');
 
