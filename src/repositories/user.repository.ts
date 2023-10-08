@@ -123,3 +123,14 @@ export async function findUserByEmailOrUsername(params: EmailOrUsername): Promis
 
   return user ? user as IUser : undefined;
 }
+
+export async function deleteUser(userId: number, transaction: Transaction) {
+  await User.destroy({
+    where: { id: userId },
+    transaction
+  });
+  await UserToken.destroy({
+    where: { userId },
+    transaction,
+  });
+}

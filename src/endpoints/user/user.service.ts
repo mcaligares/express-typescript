@@ -129,3 +129,14 @@ export async function setUserPassword(params: IChangePasswordUserToken) {
 export function getAllUsers(params: Partial<IUser>): Promise<IUser[]> {
   return userRepository.getAllUsers(params);
 }
+
+export async function deleteUser(userIdParam: string) {
+  const userId = Number(userIdParam);
+
+  if (!userId) {
+    return;
+  }
+  await withTransaction(async (transaction) => {
+    await userRepository.deleteUser(userId, transaction);
+  });
+}
