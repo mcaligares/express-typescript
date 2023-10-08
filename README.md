@@ -2,6 +2,23 @@
 
 This template should help get you started developing in Node with Express and TypeScript.
 
+## 🚀 Get started
+
+```sh
+# install dependencies
+npm run install
+
+# run server
+npm start
+
+# run postgres container with docker-compose
+docker-compose -f docker-compose.dev.yml up --build
+
+# run migrations and seeders
+npm run migrate
+npm run seed:all
+```
+
 ## 📦 Dev Environment
 
 - `node` version 16.14.2 the last LTS
@@ -31,7 +48,7 @@ These extensions are configured to be recommended to the user in the first use. 
   - [eslint](https://eslint.org/docs/rules/) - eslint:recommended.
   - [eslint-typescript](https://typescript-eslint.io/rules/) - plugin:@typescript-eslint/recommended.
 
-## 🦾 Automation
+## 🤖 Automation
 
 - [Git Hooks with Husky](https://github.com/typicode/husky)
 
@@ -42,33 +59,37 @@ These extensions are configured to be recommended to the user in the first use. 
 - [Prettier](https://github.com/prettier/prettier/) - is an opinionated code formatter.
 
   - Auto formatter code on save using [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier)
-    NPM Scripts
 
-- NPM scripts
+## 🦾 NPM scripts
 
-  | Command               | Description                                                                                     |
-  | --------------------- | ----------------------------------------------------------------------------------------------- |
-  | npm start             | Builds and runs the application                                                                 |
-  | npm run start:dev     | Starts the application in `development` mode using `nodemon` and `ts-node` to do hot reloading. |
-  | npm run build         | Builds the application at `build`, cleaning the folder first                                    |
-  | npm run lint          | Runs `lint` command.                                                                            |
-  | npm run test          | Runs the `jest` tests once.                                                                     |
-  | npm run test:coverage | Runs the `jest` coverage once.                                                                  |
-  | npm run test:dev      | Runs the `jest` tests and watches for any change.                                               |
+| Command                 | Description                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| `npm run serve`         | Builds and runs the application                                                                 |
+| `npm start`             | Starts the application in `development` mode using `nodemon` and `ts-node` to do hot reloading. |
+| `npm run build`         | Builds the application at `build`, cleaning the folder first                                    |
+| `npm run lint`          | Runs `lint` command.                                                                            |
+| `npm run test`          | Runs the `jest` tests once.                                                                     |
+| `npm run test:coverage` | Runs the `jest` coverage once.                                                                  |
+| `npm run test:dev`      | Runs the `jest` tests and watches for any change.                                               |
+| `npm run migrate`       | Runs the `sequelize-cli` command to run migrations.                                             |
+| `npm run migrate:undo`  | Runs the `sequelize-cli` command to undo migrations.                                            |
+| `npm run seed:all`      | Runs the `sequelize-cli` command to run seeders.                                                |
 
-## 🚀 Get started
+## ⚙️ Env variables
 
-```sh
-# install dependencies
-npm run install
-
-# run server
-npm run start:dev
-
-# run postgres container with docker-compose
-docker-compose -f docker-compose.dev.yml up --build
-
-# run migrations and seeders
-npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
-```
+| Variable              | Description                                               |
+| --------------------- | --------------------------------------------------------- |
+| `ENV`                 | Environment name. ej. `development`, `test`, `production` |
+| `APP_NAME`            | Application name                                          |
+| `APP_PORT`            | Application port number                                   |
+| `LOG_LEVEL`           | Log level for logging services                            |
+| `DB_USERNAME`         | Username for database configuration                       |
+| `DB_PASSWORD`         | Password for database configuration                       |
+| `DB_DATABASE`         | Database for database configuration                       |
+| `DB_HOST`             | Host for database configuration                           |
+| `DB_PORT`             | Port for database configuration                           |
+| `SECRET_KEY_TOKEN`    | Secret key for access token generation                    |
+| `SECRET_KEY_PASSWORD` | Secret key for encrypt password                           |
+| `ADMIN_EMAIL`         | Email for admin user                                      |
+| `ADMIN_USERNAME`      | Username for admin user                                   |
+| `ADMIN_PASSWORD`      | Password for admin user                                   |
