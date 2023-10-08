@@ -1,12 +1,12 @@
 import type { Response } from 'express';
 
-import type { IUser } from '@/models/i-user';
-import type { IChangePasswordUserToken, IConfirmationUserToken } from '@/models/i-user-token';
+import type { IUser, IUserWithID } from '@/models/i-user';
 import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, deleteUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
+import * as service from './user.service';
+import type { IChangePasswordUserToken, IConfirmationUserToken } from './user.types';
 
 const logger = new Logger('UserController');
 
@@ -21,13 +21,13 @@ export async function user(user: IUser, res: Response) {
   try {
     logger.info('creating new user', obfuscatePassword(user));
 
-    const result = await withTransaction(async (transaction) => {
-      const newUser = await createUser(user, transaction);
+    const result = await service.withTransaction(async (transaction) => {
+      const newUser = await service.createUser(user, transaction);
 
-      await createConfirmationToken(newUser, transaction);
+      await service.createConfirmationToken(newUser, transaction);
 
       if (newUser.needChangePassword) {
-        await createChangePasswordToken(newUser, transaction);
+        await service.createChangePasswordToken(newUser, transaction);
       }
 
       return { user: newUser };
@@ -61,7 +61,7 @@ export async function confirm({ token }: IConfirmationUserToken, res: Response) 
   try {
     logger.info('confirmating user token', token);
 
-    const result = await confirmUserAccount(token);
+    const result = await service.confirmUserAccount(token);
 
     if (!result) {
       return createResponse(403, false)
@@ -95,7 +95,7 @@ export async function setPassword(params: IChangePasswordUserToken, res: Respons
   try {
     logger.info('change password user token', params.token);
 
-    const result = await setUserPassword(params);
+    const result = await service.setUserPassword(params);
 
     if (!result) {
       return createResponse(403, false)
@@ -128,7 +128,7 @@ export async function setPassword(params: IChangePasswordUserToken, res: Respons
 export async function users(params: Partial<IUser>, res: Response) {
   try {
     logger.info('getting users');
-    const users = await getAllUsers(params);
+    const users = await service.getAllUsers(params);
 
     return createResponse(200, true)
       .withMessage('users obtained successfully')
@@ -147,6 +147,79 @@ export async function users(params: Partial<IUser>, res: Response) {
 
 /**
  * @swagger
+ * /user:
+ *   patch:
+ *     summary: Update an user
+ *     description: Update user property (username or email).
+*/
+export async function update(user: IUserWithID, res: Response) {
+  try {
+    logger.info('updating user', user);
+
+    const updatedUser = await service.updateUser(user);
+
+    logger.info('updated user', updatedUser);
+
+    return createResponse(200, true)
+      .withMessage('user updated successfully')
+      .withResult(updatedUser)
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error updating user', user, e);
+
+    return createResponse(500, false)
+      .withMessage('Error updating user')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+/**
+ * @swagger
+ * /user/enable:
+ *   post:
+ *     summary: Enable user
+*/
+export async function enable(userIdParam: string, res: Response) {
+  return enableUser(userIdParam, true, res);
+}
+
+/**
+ * @swagger
+ * /user/disable:
+ *   post:
+ *     summary: Disable user
+*/
+export async function disable(userIdParam: string, res: Response) {
+  return enableUser(userIdParam, false, res);
+}
+
+async function enableUser(userIdParam: string, enable: boolean, res: Response) {
+  try {
+    logger.info('enabling user', userIdParam, enable);
+
+    const updatedUser = await service.enableUser(userIdParam, enable);
+
+    logger.info('enabling user', updatedUser);
+
+    return createResponse(200, true)
+      .withMessage('user updated successfully')
+      .withResult(updatedUser)
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error enabling user', user, e);
+
+    return createResponse(500, false)
+      .withMessage('Error enabling user')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+/**
+ * @swagger
  * /user/:userId:
  *   delete:
  *     summary: Delete a user
@@ -155,7 +228,7 @@ export async function users(params: Partial<IUser>, res: Response) {
 export async function _delete(userIdParam: string, res: Response) {
   try {
     logger.info('deleting user', userIdParam);
-    await deleteUser(userIdParam);
+    await service.deleteUser(userIdParam);
 
     return createResponse(200, true)
       .withMessage('user deleted successfully')

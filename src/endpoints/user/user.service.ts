@@ -2,7 +2,7 @@ import type { Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { IUser, IUserWithID } from '@/models/i-user';
-import type { IChangePasswordUserToken, IUserToken, UserTokenType } from '@/models/i-user-token';
+import type { IUserToken, UserTokenType } from '@/models/i-user-token';
 import * as userRepository from '@/repositories/user.repository';
 import { encrypt } from '@/services/crypt.service';
 import { Logger } from '@/services/logger.service';
@@ -10,6 +10,7 @@ import { getDaysAt, getNextDayAt } from '@/utils/date.utils';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import { getConnection } from '../../db';
+import type { IChangePasswordUserToken } from './user.types';
 
 const logger = new Logger('UserService');
 
@@ -130,11 +131,30 @@ export function getAllUsers(params: Partial<IUser>): Promise<IUser[]> {
   return userRepository.getAllUsers(params);
 }
 
+export async function updateUser(params: IUserWithID): Promise<IUserWithID> {
+  const { id, email, username } = params;
+  const user = { id, email, username } as IUserWithID;
+
+  return await userRepository.updateUser(user);
+}
+
+export async function enableUser(userIdParam: string, enable: boolean): Promise<IUserWithID> {
+  const userId = Number(userIdParam);
+
+  if (!userId) {
+    throw 'invalid id';
+  }
+
+  const user = { id: userId, enable };
+
+  return await userRepository.setEnableUser(user);
+}
+
 export async function deleteUser(userIdParam: string) {
   const userId = Number(userIdParam);
 
   if (!userId) {
-    return;
+    throw 'invalid id';
   }
   await withTransaction(async (transaction) => {
     await userRepository.deleteUser(userId, transaction);

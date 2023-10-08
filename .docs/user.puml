@@ -134,21 +134,7 @@ participant UserController order 4
 participant UserService order 5
 participant UserRepository order 6
 
-UserRouter -> AuthMiddleware ++: PUT /user/:userId
-AuthMiddleware -> AuthMiddleware ++--: validate
-AuthMiddleware --> UserRouter --: authenticated
-
-UserRouter -> UserController ++ : update(user)
-
-UserController -> UserService ++: updateUser(user)
-UserService -> UserRepository ++: update(user)
-UserRepository -> UserService --: updatedUser
-UserService -> UserController --: updatedUser
-UserController -> UserRouter --: updatedUser
-
-== Enable/Disable User ==
-
-UserRouter -> AuthMiddleware ++: POST /user/enable
+UserRouter -> AuthMiddleware ++: PATCH /user
 AuthMiddleware -> AuthMiddleware ++--: validate
 AuthMiddleware --> UserRouter --: authenticated
 
@@ -156,9 +142,39 @@ UserRouter -> ValidateMiddleware ++: validateParams
 ValidateMiddleware -> ValidateMiddleware ++--: validate
 ValidateMiddleware --> UserRouter --: valid
 
-UserRouter -> UserController ++ : enable(params)
+UserRouter -> UserController ++ : update(user)
 
-UserController -> UserService ++: setEnableUser(params)
+UserController -> UserService ++: updateUser(user)
+UserService -> UserRepository ++: updateUser(user)
+UserRepository -> UserRepository ++--: update
+UserRepository -> UserRepository ++--: findUser
+UserRepository -> UserService --: updatedUser
+UserService -> UserController --: updatedUser
+UserController -> UserRouter --: updatedUser
+
+== Enable User ==
+
+UserRouter -> AuthMiddleware ++: POST /user/enable/:userId
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : enable(userId)
+
+UserController -> UserService ++: setEnableUser(userId)
+UserService -> UserRepository ++: update(user)
+UserRepository -> UserService --: updatedUser
+UserService -> UserController --: updatedUser
+UserController -> UserRouter : updatedUser
+
+== Disable User ==
+
+UserRouter -> AuthMiddleware ++: POST /user/disable/:userId
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : disable(userId)
+
+UserController -> UserService ++: setEnableUser(userId)
 UserService -> UserRepository ++: update(user)
 UserRepository -> UserService --: updatedUser
 UserService -> UserController --: updatedUser
