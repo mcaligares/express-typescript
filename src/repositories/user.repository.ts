@@ -2,6 +2,7 @@ import type { IUser, IUserWithID } from 'models/i-user';
 import type { WhereOptions } from 'sequelize';
 import { Op, type Transaction } from 'sequelize';
 
+import type { IUserIdAndEnable } from '@/endpoints/user/user.types';
 import type { IUserToken, IUserTokenWithID } from '@/models/i-user-token';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
@@ -30,6 +31,20 @@ export async function updateUser(user: IUserWithID): Promise<IUserWithID> {
   await User.update({
     email: user.email,
     username: user.username,
+  }, {
+    where: { id: user.id }
+  });
+
+  return await User.findByPk(user.id, {
+    attributes: { exclude: ['password'] }
+  }) as IUserWithID;
+}
+
+export async function setEnableUser(user: IUserIdAndEnable): Promise<IUserWithID> {
+  logger.debug('enabling user', user);
+
+  await User.update({
+    enabled: user.enable
   }, {
     where: { id: user.id }
   });

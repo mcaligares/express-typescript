@@ -28,3 +28,5 @@ export const ChangePasswordUserTokenSchema = Joi.object<IChangePasswordUserToken
   token: Joi.string().uuid().required(),
   password: Joi.string().required().min(6),
 });
+
+export type IUserIdAndEnable = { id: number; enable: boolean };

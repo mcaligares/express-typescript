@@ -152,19 +152,29 @@ UserRepository -> UserService --: updatedUser
 UserService -> UserController --: updatedUser
 UserController -> UserRouter --: updatedUser
 
-== Enable/Disable User ==
+== Enable User ==
 
-UserRouter -> AuthMiddleware ++: POST /user/enable
+UserRouter -> AuthMiddleware ++: POST /user/enable/:userId
 AuthMiddleware -> AuthMiddleware ++--: validate
 AuthMiddleware --> UserRouter --: authenticated
 
-UserRouter -> ValidateMiddleware ++: validateParams
-ValidateMiddleware -> ValidateMiddleware ++--: validate
-ValidateMiddleware --> UserRouter --: valid
+UserRouter -> UserController ++ : enable(userId)
 
-UserRouter -> UserController ++ : enable(params)
+UserController -> UserService ++: setEnableUser(userId)
+UserService -> UserRepository ++: update(user)
+UserRepository -> UserService --: updatedUser
+UserService -> UserController --: updatedUser
+UserController -> UserRouter : updatedUser
 
-UserController -> UserService ++: setEnableUser(params)
+== Disable User ==
+
+UserRouter -> AuthMiddleware ++: POST /user/disable/:userId
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : disable(userId)
+
+UserController -> UserService ++: setEnableUser(userId)
 UserService -> UserRepository ++: update(user)
 UserRepository -> UserService --: updatedUser
 UserService -> UserController --: updatedUser

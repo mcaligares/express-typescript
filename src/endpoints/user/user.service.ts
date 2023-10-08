@@ -138,11 +138,23 @@ export async function updateUser(params: IUserWithID): Promise<IUserWithID> {
   return await userRepository.updateUser(user);
 }
 
+export async function enableUser(userIdParam: string, enable: boolean): Promise<IUserWithID> {
+  const userId = Number(userIdParam);
+
+  if (!userId) {
+    throw 'invalid id';
+  }
+
+  const user = { id: userId, enable };
+
+  return await userRepository.setEnableUser(user);
+}
+
 export async function deleteUser(userIdParam: string) {
   const userId = Number(userIdParam);
 
   if (!userId) {
-    return;
+    throw 'invalid id';
   }
   await withTransaction(async (transaction) => {
     await userRepository.deleteUser(userId, transaction);

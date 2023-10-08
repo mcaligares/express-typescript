@@ -63,4 +63,16 @@ router.patch(
   (req: Request, res: Response) => userController.update(req.body, res)
 );
 
+router.post(
+  '/user/enable/:userId',
+  authValidationHandler,
+  (req: Request, res: Response) => userController.enable(req.params.userId, res)
+);
+
+router.post(
+  '/user/disable/:userId',
+  authValidationHandler,
+  (req: Request, res: Response) => userController.disable(req.params.userId, res)
+);
+
 export default router;
