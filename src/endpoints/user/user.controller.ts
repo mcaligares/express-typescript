@@ -6,7 +6,7 @@ import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
+import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, deleteUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
 
 const logger = new Logger('UserController');
 
@@ -140,6 +140,33 @@ export async function users(params: Partial<IUser>, res: Response) {
 
     return createResponse(500, false)
       .withMessage('Error getting all users')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+/**
+ * @swagger
+ * /user/:userId:
+ *   delete:
+ *     summary: Delete a user
+ *     description: Delete user and  userToken associated.
+*/
+export async function _delete(userIdParam: string, res: Response) {
+  try {
+    logger.info('deleting user', userIdParam);
+    await deleteUser(userIdParam);
+
+    return createResponse(200, true)
+      .withMessage('user deleted successfully')
+      .withResult(users)
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error deleting user', e);
+
+    return createResponse(500, false)
+      .withMessage('Error deleting user')
       .withLogger(logger)
       .send(res);
   }

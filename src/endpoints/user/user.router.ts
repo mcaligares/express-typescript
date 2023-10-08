@@ -48,4 +48,10 @@ router.post(
   (req: Request, res: Response) => userController.setPassword(req.body, res)
 );
 
+router.delete(
+  '/user/:userId',
+  authValidationHandler,
+  (req: Request, res: Response) => userController._delete(req.params.userId, res)
+);
+
 export default router;
