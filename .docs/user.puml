@@ -2,9 +2,9 @@
 title User Signup Flow v2
 hide footbox
 
-UserRouter -> ValidationMiddleware : POST/user
+UserRouter -> ValidationMiddleware ++: POST/user
 ValidationMiddleware -> ValidationMiddleware ++--: validate
-ValidationMiddleware --> UserRouter : validatedUser
+ValidationMiddleware --> UserRouter --: validatedUser
 
 UserRouter -> UserController ++ : user(validatedUser)
 
@@ -34,9 +34,9 @@ UserController -> UserRouter : newUser
 title User Confirmation Flow v1
 hide footbox
 
-UserRouter -> ValidationMiddleware : POST/user/confirm
+UserRouter -> ValidationMiddleware ++: POST/user/confirm
 ValidationMiddleware -> ValidationMiddleware ++--: validate
-ValidationMiddleware --> UserRouter : validatedUserToken
+ValidationMiddleware --> UserRouter --: validatedUserToken
 
 UserRouter -> UserController ++ : confirm(validatedUserToken)
 
@@ -60,9 +60,9 @@ UserController -> UserRouter : confirmed
 title User Change Password Flow v1
 hide footbox
 
-UserRouter -> ValidationMiddleware : POST/user/password
+UserRouter -> ValidationMiddleware ++: POST/user/password
 ValidationMiddleware -> ValidationMiddleware ++--: validate
-ValidationMiddleware --> UserRouter : validatedUserToken
+ValidationMiddleware --> UserRouter --: validatedUserToken
 
 UserRouter -> UserController ++ : setPassword(validatedUserToken)
 
@@ -79,5 +79,89 @@ end
 UserService -> UserController --: updated
 
 UserController -> UserRouter : updated
+
+@enduml
+
+@startuml users list
+title Users List Flow v2
+hide footbox
+
+UserRouter -> AuthMiddleware ++: GET /users
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : users(filter)
+
+UserController -> UserService ++: getAllUsers(filter)
+UserService -> UserRepository ++: getAllUsers(filter)
+UserRepository -> UserService --: users
+UserService -> UserController --: users
+
+UserController -> UserRouter : users
+
+@enduml
+
+@startuml delete user
+title Delete User Flow v2
+hide footbox
+
+UserRouter -> AuthMiddleware ++: DELETE /user/:userId
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : _delete(userId)
+
+UserController -> UserService ++: deleteUser(filter)
+group withTransaction
+UserService -> UserRepository ++: deleteUser(filter)
+UserRepository -> UserRepository ++--: deleteUser
+UserRepository -> UserRepository ++--: deleteUserToken
+UserRepository -> UserService --:
+end
+UserService -> UserController --:
+
+UserController -> UserRouter :
+
+@enduml
+
+@startuml update user
+title Update User Flow v2
+hide footbox
+participant UserRouter order 1
+participant AuthMiddleware order 2
+participant ValidateMiddleware order 3
+participant UserController order 4
+participant UserService order 5
+participant UserRepository order 6
+
+UserRouter -> AuthMiddleware ++: PUT /user/:userId
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> UserController ++ : update(user)
+
+UserController -> UserService ++: updateUser(user)
+UserService -> UserRepository ++: update(user)
+UserRepository -> UserService --: updatedUser
+UserService -> UserController --: updatedUser
+UserController -> UserRouter --: updatedUser
+
+== Enable/Disable User ==
+
+UserRouter -> AuthMiddleware ++: POST /user/enable
+AuthMiddleware -> AuthMiddleware ++--: validate
+AuthMiddleware --> UserRouter --: authenticated
+
+UserRouter -> ValidateMiddleware ++: validateParams
+ValidateMiddleware -> ValidateMiddleware ++--: validate
+ValidateMiddleware --> UserRouter --: valid
+
+UserRouter -> UserController ++ : enable(params)
+
+UserController -> UserService ++: setEnableUser(params)
+UserService -> UserRepository ++: update(user)
+UserRepository -> UserService --: updatedUser
+UserService -> UserController --: updatedUser
+UserController -> UserRouter : updatedUser
 
 @enduml

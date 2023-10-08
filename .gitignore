@@ -110,3 +110,6 @@ dist
 # Diagram
 diagram.drawio
 .$diagram.drawio.bkp
+
+# Out folder
+out
