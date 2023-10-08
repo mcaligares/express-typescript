@@ -11,6 +11,7 @@ This template should help get you started developing in Node with Express and Ty
 
 - [VS Code](https://code.visualstudio.com/)
 - [VS Code Extension - Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode): This is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules.
+- [VS Code Extension - PlantUML](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml): This is a useful tool for creating and previewing PlantUML diagrams.
 
 These extensions are configured to be recommended to the user in the first use. You can see the recommended extensions running `Show Recommended Extensions` from VS Code's command palette,
 
