@@ -27,7 +27,7 @@ router.post(
 router.get(
   '/users',
   authValidationHandler,
-  (req: Request, res: Response) => userController.users(res)
+  (req: Request, res: Response) => userController.users(req.body, res)
 );
 
 const confirmationUserTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
