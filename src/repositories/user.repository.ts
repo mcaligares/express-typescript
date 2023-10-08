@@ -6,7 +6,7 @@ import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import User from '../db/models/user';
-import UserToken from '../db/models/UserToken';
+import UserToken from '../db/models/usertoken';
 
 const logger = new Logger('UserRespository');
 
@@ -26,12 +26,14 @@ export async function createUser(user: IUser, transaction?: Transaction): Promis
 export async function createUserToken(userToken: IUserToken, transaction?: Transaction): Promise<IUserTokenWithID> {
   logger.debug('creating user token', userToken);
 
-  return await UserToken.create({
+  const entity = await UserToken.create({
     expiresIn: userToken.expiresIn,
     userId: userToken.userId,
     token: userToken.token,
     type: userToken.type,
-  }, { transaction }) as IUserTokenWithID;
+  }, { transaction });
+
+  return entity.get();
 }
 
 export async function findUserToken(userToken: string) {
@@ -65,7 +67,8 @@ type SetPasswordParams = ConfirmParams & {
 export async function setPasswordWithUserToken(params: SetPasswordParams) {
   await deleteUserToken(params.userTokenId, params.transaction);
   await User.update({
-    password: params.password
+    password: params.password,
+    needChangePassword: false,
   }, {
     where: { id: params.userId },
     transaction: params.transaction,

@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-type UserTokenType = 'confirmation-email' | 'change-password';
+export type UserTokenType = 'confirmation-email' | 'change-password';
 
 export type IUserToken = {
   type: UserTokenType

@@ -1,5 +1,5 @@
 import User from './user';
-import UserToken from './UserToken';
+import UserToken from './usertoken';
 
 const models = [
   User,

@@ -7,7 +7,6 @@ import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
-import type { UserTransactionResult } from './user.types';
 
 const logger = new Logger('UserController');
 
@@ -24,13 +23,14 @@ export async function user(user: IUser, res: Response) {
 
     const result = await withTransaction(async (transaction) => {
       const newUser = await createUser(user, transaction);
-      const userToken = await createConfirmationToken(newUser, transaction);
+
+      await createConfirmationToken(newUser, transaction);
 
       if (newUser.needChangePassword) {
         await createChangePasswordToken(newUser, transaction);
       }
 
-      return { user: newUser, userToken } as UserTransactionResult;
+      return { user: newUser };
     });
 
     logger.info('created user and token in transaction', result);
@@ -52,7 +52,7 @@ export async function user(user: IUser, res: Response) {
 
 /**
  * @swagger
- * /confirm:
+ * /user/confirm:
  *   post:
  *     summary: confirm user account
  *     description: confirm user account
@@ -86,10 +86,10 @@ export async function confirm({ token }: IConfirmationUserToken, res: Response) 
 
 /**
  * @swagger
- * /confirm:
+ * /user/password:
  *   post:
- *     summary: confirm user account
- *     description: confirm user account
+ *     summary: change the user password
+ *     description: change the user password using a change-password-token as authenticator
 */
 export async function setPassword(params: IChangePasswordUserToken, res: Response) {
   try {

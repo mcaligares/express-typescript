@@ -2,7 +2,7 @@ import type { Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { IUser, IUserWithID } from '@/models/i-user';
-import type { IChangePasswordUserToken, IUserToken } from '@/models/i-user-token';
+import type { IChangePasswordUserToken, IUserToken, UserTokenType } from '@/models/i-user-token';
 import * as userRepository from '@/repositories/user.repository';
 import { encrypt } from '@/services/crypt.service';
 import { Logger } from '@/services/logger.service';
@@ -28,9 +28,9 @@ export async function withTransaction<T>(callback: TransactionCallback<T>) {
 }
 
 export async function createUser(params: IUser, transaction: Transaction): Promise<IUserWithID> {
-  const { username, email } = params;
+  const { username, email, needChangePassword } = params;
   const password = encryptPassword(params.password);
-  const newUser: IUser = { ...USER_DEFAULT_VALUES, username, email, password };
+  const newUser: IUser = { ...USER_DEFAULT_VALUES, username, email, password, needChangePassword };
   const user = await userRepository.createUser(newUser, transaction);
   const result = obfuscatePassword(user);
 
@@ -70,7 +70,7 @@ export async function createChangePasswordToken(params: IUserWithID, transaction
 }
 
 export async function confirmUserAccount(token: string) {
-  const userToken = await getAndValidateUserToken(token);
+  const userToken = await getAndValidateUserToken(token, 'confirmation-email');
 
   if (!userToken) {
     return false;
@@ -87,10 +87,13 @@ export async function confirmUserAccount(token: string) {
   return true;
 }
 
-async function getAndValidateUserToken(token: string) {
+async function getAndValidateUserToken(token: string, type: UserTokenType) {
   const userToken = await userRepository.findUserToken(token);
 
   if (!userToken) {
+    return undefined;
+  }
+  if (userToken.type !== type) {
     return undefined;
   }
   if (userToken.expiresIn < new Date()) {
@@ -104,7 +107,7 @@ async function getAndValidateUserToken(token: string) {
 
 export async function setUserPassword(params: IChangePasswordUserToken) {
   const password = encryptPassword(params.password);
-  const userToken = await getAndValidateUserToken(params.token);
+  const userToken = await getAndValidateUserToken(params.token, 'change-password');
 
   if (!userToken) {
     return false;

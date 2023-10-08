@@ -1,12 +1,12 @@
 /* eslint-disable indent */
 import type { Optional } from 'sequelize';
-import { AllowNull, BelongsTo, Column, CreatedAt, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, Column, CreatedAt, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
 
 import type { IUserToken } from '@/models/i-user-token';
 
-import User from './User';
+import User from './user';
 
-type UserTokenAttributes = IUserToken & { id: string };
+type UserTokenAttributes = IUserToken & { id: number };
 
 type UserTokenCreationAttributes = Optional<UserTokenAttributes, 'id'>;
 
@@ -26,9 +26,6 @@ class UserToken extends Model<UserTokenAttributes, UserTokenCreationAttributes> 
   @ForeignKey(() => User)
   @Column
   userId!: number;
-
-  @BelongsTo(() => User)
-  user!: User;
 
   @Column
   @CreatedAt

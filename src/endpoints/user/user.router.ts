@@ -34,7 +34,7 @@ const confirmationUserTokenValidationHandler = (req: Request, res: Response, nex
   validationMiddleware(req, res, next, ConfirmationUserTokenSchema);
 
 router.post(
-  '/confirm',
+  '/user/confirm',
   confirmationUserTokenValidationHandler,
   (req: Request, res: Response) => userController.confirm(req.body, res)
 );
@@ -43,9 +43,9 @@ const changePasswordUserTokenValidationHandler = (req: Request, res: Response, n
   validationMiddleware(req, res, next, ChangePasswordUserTokenSchema);
 
 router.post(
-  '/confirm',
+  '/user/password',
   changePasswordUserTokenValidationHandler,
-  (req: Request, res: Response) => userController.confirm(req.body, res)
+  (req: Request, res: Response) => userController.setPassword(req.body, res)
 );
 
 export default router;
