@@ -4,11 +4,13 @@ import { AllowNull, Column, CreatedAt, DeletedAt, Model, Table, Unique, UpdatedA
 
 import type { IUser } from '@/models/i-user';
 
+export const USER_TABLE = 'Users';
+
 type UserAttributes = IUser & { id: number };
 
 type UserCreationAttributes = Optional<UserAttributes, 'id'>;
 
-@Table({ tableName: 'Users' })
+@Table({ tableName: USER_TABLE })
 class User extends Model<UserAttributes, UserCreationAttributes> {
   @Unique
   @AllowNull(false)

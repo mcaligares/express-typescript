@@ -1,3 +1,4 @@
+import type { SequelizeOptions } from 'sequelize-typescript';
 import { Sequelize } from 'sequelize-typescript';
 
 import { logger } from '@/services/logger.service';
@@ -17,7 +18,10 @@ const connection: ConnectionType = {
 
 export async function initializeDB() {
   try {
-    const options = { ...config, query: { raw: true } };
+    const options: SequelizeOptions = {
+      ...config,
+      query: { raw: true },
+    };
     const sequelize = new Sequelize(options);
 
     sequelize.addModels(models);
