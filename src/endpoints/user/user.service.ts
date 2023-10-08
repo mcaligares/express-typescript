@@ -126,6 +126,6 @@ export async function setUserPassword(params: IChangePasswordUserToken) {
 }
 
 
-export function getAllUsers(): Promise<IUser[]> {
-  return userRepository.getAllUsers();
+export function getAllUsers(params: Partial<IUser>): Promise<IUser[]> {
+  return userRepository.getAllUsers(params);
 }

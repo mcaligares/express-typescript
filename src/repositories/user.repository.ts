@@ -1,5 +1,6 @@
 import type { IUser, IUserWithID } from 'models/i-user';
-import type { Transaction } from 'sequelize';
+import type { WhereOptions } from 'sequelize';
+import { Op, type Transaction } from 'sequelize';
 
 import type { IUserToken, IUserTokenWithID } from '@/models/i-user-token';
 import { Logger } from '@/services/logger.service';
@@ -82,10 +83,28 @@ export async function deleteUserToken(userTokenId: number, transaction?: Transac
   });
 }
 
-export async function getAllUsers(): Promise<IUser[]> {
-  logger.debug('getting all users');
+export async function getAllUsers(filter: Partial<IUser>): Promise<IUser[]> {
+  logger.debug('getting users with filter', filter);
 
-  return await User.findAll();
+  const where: WhereOptions<User> = {};
+
+  if (filter.enabled !== undefined) {
+    where.enabled = filter.enabled;
+  }
+  if (filter.confirmed !== undefined) {
+    where.confirmed = filter.confirmed;
+  }
+  if (filter.email && filter.email.trim()) {
+    where.email = { [Op.iLike]: `%${filter.email}%` };
+  }
+  if (filter.username && filter.username.trim()) {
+    where.username = { [Op.iLike]: `%${filter.username}%` };
+  }
+
+  return await User.findAll({
+    where,
+    attributes: { exclude: ['password'] }
+  });
 }
 
 type EmailOrUsername = Partial<{ email: string, username: string }>;

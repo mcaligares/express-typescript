@@ -122,13 +122,13 @@ export async function setPassword(params: IChangePasswordUserToken, res: Respons
  * @swagger
  * /users:
  *   get:
- *     summary: get all users
- *     description: Retrieve a list of users.
+ *     summary: Get users
+ *     description: Get all user by filter.
 */
-export async function users(res: Response) {
+export async function users(params: Partial<IUser>, res: Response) {
   try {
     logger.info('getting users');
-    const users = await getAllUsers();
+    const users = await getAllUsers(params);
 
     return createResponse(200, true)
       .withMessage('users obtained successfully')

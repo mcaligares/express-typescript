@@ -1,0 +1,83 @@
+@startuml user signup
+title User Signup Flow v2
+hide footbox
+
+UserRouter -> ValidationMiddleware : POST/user
+ValidationMiddleware -> ValidationMiddleware ++--: validate
+ValidationMiddleware --> UserRouter : validatedUser
+
+UserRouter -> UserController ++ : user(validatedUser)
+
+group withTransactions
+  UserController -> UserService ++: createUser(validatedUser)
+  UserService -> UserRepository ++: createUser(validatedUser)
+  UserRepository -> UserService --: user
+  UserService -> UserController --: user
+
+  UserController -> UserService ++: createConfirmationUserToken(user)
+  UserService -> UserRepository ++: createUserToken(usr)
+  UserRepository -> UserService --: userToken
+  UserService -> UserController --: userToken
+  group if user need change password
+    UserController -> UserService ++: createPasswordUserToken(user)
+    UserService -> UserRepository ++: createUserToken(user)
+    UserRepository -> UserService --: userToken
+    UserService -> UserController --: userToken
+  end
+end
+
+UserController -> UserRouter : newUser
+
+@enduml
+
+@startuml user confirm
+title User Confirmation Flow v1
+hide footbox
+
+UserRouter -> ValidationMiddleware : POST/user/confirm
+ValidationMiddleware -> ValidationMiddleware ++--: validate
+ValidationMiddleware --> UserRouter : validatedUserToken
+
+UserRouter -> UserController ++ : confirm(validatedUserToken)
+
+UserController -> UserService ++: confirmUserAccount(validatedUserToken)
+UserService -> UserRepository ++: getAndValidateUserToken(validatedUserToken)
+UserRepository -> UserService --: validToken
+
+group withTransaction
+  UserService -> UserRepository : confirmUserToken(validToken)
+  UserRepository -> UserRepository ++--: deleteUserToken
+  UserRepository -> UserRepository ++--: updateUser
+  UserRepository -> UserService : confirmed
+end
+UserService -> UserController --: confirmed
+
+UserController -> UserRouter : confirmed
+
+@enduml
+
+@startuml user set password
+title User Change Password Flow v1
+hide footbox
+
+UserRouter -> ValidationMiddleware : POST/user/password
+ValidationMiddleware -> ValidationMiddleware ++--: validate
+ValidationMiddleware --> UserRouter : validatedUserToken
+
+UserRouter -> UserController ++ : setPassword(validatedUserToken)
+
+UserController -> UserService ++: setUserPassword(validToken)
+UserService -> UserRepository ++: getAndValidateUserToken(validatedUserToken)
+UserRepository -> UserService --: validToken
+
+group withTransaction
+  UserService -> UserRepository : setPasswordWithUserToken(validatedUserToken)
+  UserRepository -> UserRepository ++--: deleteUserToken
+  UserRepository -> UserRepository ++--: updateUser
+  UserRepository -> UserService : updated
+end
+UserService -> UserController --: updated
+
+UserController -> UserRouter : updated
+
+@enduml
