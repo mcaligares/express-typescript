@@ -1,13 +1,16 @@
-import type { IUser } from 'models/i-user';
+import type { IUser, IUserWithID } from 'models/i-user';
+import type { Transaction } from 'sequelize';
 
+import type { IUserToken, IUserTokenWithID } from '@/models/i-user-token';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import User from '../db/models/user';
+import UserToken from '../db/models/usertoken';
 
 const logger = new Logger('UserRespository');
 
-export async function createUser(user: IUser): Promise<IUser> {
+export async function createUser(user: IUser, transaction?: Transaction): Promise<IUserWithID> {
   logger.debug('creating user', obfuscatePassword(user));
 
   return await User.create({
@@ -17,7 +20,66 @@ export async function createUser(user: IUser): Promise<IUser> {
     needChangePassword: !!user.needChangePassword,
     confirmed: !!user.confirmed,
     enabled: !!user.enabled,
-  } as IUser);
+  }, { transaction }) as IUserWithID;
+}
+
+export async function createUserToken(userToken: IUserToken, transaction?: Transaction): Promise<IUserTokenWithID> {
+  logger.debug('creating user token', userToken);
+
+  const entity = await UserToken.create({
+    expiresIn: userToken.expiresIn,
+    userId: userToken.userId,
+    token: userToken.token,
+    type: userToken.type,
+  }, { transaction });
+
+  return entity.get();
+}
+
+export async function findUserToken(userToken: string) {
+  logger.debug('finding user token', userToken);
+
+  return await UserToken.findOne({
+    where: { token: userToken }
+  }) as IUserTokenWithID;
+}
+
+type ConfirmParams = {
+  userId: number
+  userTokenId: number
+  transaction: Transaction
+}
+
+export async function confirmUserToken(params: ConfirmParams) {
+  await deleteUserToken(params.userTokenId, params.transaction);
+  await User.update({
+    confirmed: true
+  }, {
+    where: { id: params.userId },
+    transaction: params.transaction,
+  });
+}
+
+type SetPasswordParams = ConfirmParams & {
+  password: string
+}
+
+export async function setPasswordWithUserToken(params: SetPasswordParams) {
+  await deleteUserToken(params.userTokenId, params.transaction);
+  await User.update({
+    password: params.password,
+    needChangePassword: false,
+  }, {
+    where: { id: params.userId },
+    transaction: params.transaction,
+  });
+}
+
+export async function deleteUserToken(userTokenId: number, transaction?: Transaction) {
+  await UserToken.destroy({
+    where: { id: userTokenId },
+    transaction: transaction,
+  });
 }
 
 export async function getAllUsers(): Promise<IUser[]> {

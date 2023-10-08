@@ -4,7 +4,7 @@ import { AllowNull, Column, CreatedAt, DeletedAt, Model, Table, Unique, UpdatedA
 
 import type { IUser } from '@/models/i-user';
 
-type UserAttributes = IUser & { id: string };
+type UserAttributes = IUser & { id: number };
 
 type UserCreationAttributes = Optional<UserAttributes, 'id'>;
 

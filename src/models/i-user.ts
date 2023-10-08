@@ -9,6 +9,10 @@ export interface IUser {
   enabled: boolean
 }
 
+export interface IUserWithID extends IUser {
+  id: number
+}
+
 export const UserSchema = Joi.object<IUser>({
   email: Joi.string().required(),
   username: Joi.string().min(3).required(),

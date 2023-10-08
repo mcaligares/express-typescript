@@ -37,7 +37,8 @@
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.5",
-    "sequelize-typescript": "^2.1.5"
+    "sequelize-typescript": "^2.1.5",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/compression": "^1.7.1",

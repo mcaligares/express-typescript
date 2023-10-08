@@ -1,11 +1,12 @@
 import type { Response } from 'express';
 
 import type { IUser } from '@/models/i-user';
+import type { IChangePasswordUserToken, IConfirmationUserToken } from '@/models/i-user-token';
 import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { createUser, getAllUsers } from './user.service';
+import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
 
 const logger = new Logger('UserController');
 
@@ -19,13 +20,24 @@ const logger = new Logger('UserController');
 export async function user(user: IUser, res: Response) {
   try {
     logger.info('creating new user', obfuscatePassword(user));
-    const newUser = await createUser(user);
 
-    logger.info('created user', newUser);
+    const result = await withTransaction(async (transaction) => {
+      const newUser = await createUser(user, transaction);
+
+      await createConfirmationToken(newUser, transaction);
+
+      if (newUser.needChangePassword) {
+        await createChangePasswordToken(newUser, transaction);
+      }
+
+      return { user: newUser };
+    });
+
+    logger.info('created user and token in transaction', result);
 
     return createResponse(200, true)
       .withMessage('user created successfully')
-      .withResult(newUser)
+      .withResult(result.user)
       .withLogger(logger)
       .send(res);
   } catch (e) {
@@ -33,6 +45,74 @@ export async function user(user: IUser, res: Response) {
 
     return createResponse(500, false)
       .withMessage('Error creating user')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+/**
+ * @swagger
+ * /user/confirm:
+ *   post:
+ *     summary: confirm user account
+ *     description: confirm user account
+*/
+export async function confirm({ token }: IConfirmationUserToken, res: Response) {
+  try {
+    logger.info('confirmating user token', token);
+
+    const result = await confirmUserAccount(token);
+
+    if (!result) {
+      return createResponse(403, false)
+        .withMessage('invalid user token')
+        .withLogger(logger)
+        .send(res);
+    }
+
+    return createResponse(200, true)
+      .withMessage('user confirmed successfully')
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error confirming user token', token, e);
+
+    return createResponse(500, false)
+      .withMessage('Error confirming user token')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
+/**
+ * @swagger
+ * /user/password:
+ *   post:
+ *     summary: change the user password
+ *     description: change the user password using a change-password-token as authenticator
+*/
+export async function setPassword(params: IChangePasswordUserToken, res: Response) {
+  try {
+    logger.info('change password user token', params.token);
+
+    const result = await setUserPassword(params);
+
+    if (!result) {
+      return createResponse(403, false)
+        .withMessage('invalid user token')
+        .withLogger(logger)
+        .send(res);
+    }
+
+    return createResponse(200, true)
+      .withMessage('user password updated successfully')
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error setting user password', params.token, e);
+
+    return createResponse(500, false)
+      .withMessage('Error setting user password')
       .withLogger(logger)
       .send(res);
   }
