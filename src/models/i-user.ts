@@ -1,5 +1,3 @@
-import Joi from 'joi';
-
 export interface IUser {
   email: string
   username: string
@@ -12,10 +10,3 @@ export interface IUser {
 export interface IUserWithID extends IUser {
   id: number
 }
-
-export const UserSchema = Joi.object<IUser>({
-  email: Joi.string().required(),
-  username: Joi.string().min(3).required(),
-  password: Joi.string().required().min(6),
-  needChangePassword: Joi.boolean().optional(),
-});

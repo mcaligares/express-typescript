@@ -1,12 +1,12 @@
 import type { Response } from 'express';
 
-import type { IUser } from '@/models/i-user';
-import type { IChangePasswordUserToken, IConfirmationUserToken } from '@/models/i-user-token';
+import type { IUser, IUserWithID } from '@/models/i-user';
 import { createResponse } from '@/services/controller.service';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
-import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, deleteUser, getAllUsers, setUserPassword, withTransaction } from './user.service';
+import { confirmUserAccount, createChangePasswordToken, createConfirmationToken, createUser, deleteUser, getAllUsers, setUserPassword, updateUser, withTransaction } from './user.service';
+import type { IChangePasswordUserToken, IConfirmationUserToken } from './user.types';
 
 const logger = new Logger('UserController');
 
@@ -144,6 +144,37 @@ export async function users(params: Partial<IUser>, res: Response) {
       .send(res);
   }
 }
+
+/**
+ * @swagger
+ * /user:
+ *   patch:
+ *     summary: Update an user
+ *     description: Update user property (username or email).
+*/
+export async function update(user: IUserWithID, res: Response) {
+  try {
+    logger.info('updating user', user);
+
+    const updatedUser = await updateUser(user);
+
+    logger.info('updated user', updatedUser);
+
+    return createResponse(200, true)
+      .withMessage('user updated successfully')
+      .withResult(updatedUser)
+      .withLogger(logger)
+      .send(res);
+  } catch (e) {
+    logger.error('Error updating user', user, e);
+
+    return createResponse(500, false)
+      .withMessage('Error updating user')
+      .withLogger(logger)
+      .send(res);
+  }
+}
+
 
 /**
  * @swagger

@@ -24,6 +24,21 @@ export async function createUser(user: IUser, transaction?: Transaction): Promis
   }, { transaction }) as IUserWithID;
 }
 
+export async function updateUser(user: IUserWithID): Promise<IUserWithID> {
+  logger.debug('updating user', user);
+
+  await User.update({
+    email: user.email,
+    username: user.username,
+  }, {
+    where: { id: user.id }
+  });
+
+  return await User.findByPk(user.id, {
+    attributes: { exclude: ['password'] }
+  }) as IUserWithID;
+}
+
 export async function createUserToken(userToken: IUserToken, transaction?: Transaction): Promise<IUserTokenWithID> {
   logger.debug('creating user token', userToken);
 

@@ -4,10 +4,9 @@ import { Router } from 'express';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import type { IRequest } from '@/models/i-request';
-import { UserSchema } from '@/models/i-user';
-import { ChangePasswordUserTokenSchema, ConfirmationUserTokenSchema } from '@/models/i-user-token';
 
 import * as userController from './user.controller';
+import { ChangePasswordUserTokenSchema, ConfirmationUserTokenSchema, UpdateUserSchema, UserSchema } from './user.types';
 
 const router = Router();
 
@@ -52,6 +51,16 @@ router.delete(
   '/user/:userId',
   authValidationHandler,
   (req: Request, res: Response) => userController._delete(req.params.userId, res)
+);
+
+const updateUserValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+  validationMiddleware(req, res, next, UpdateUserSchema);
+
+router.patch(
+  '/user',
+  authValidationHandler,
+  updateUserValidationHandler,
+  (req: Request, res: Response) => userController.update(req.body, res)
 );
 
 export default router;
