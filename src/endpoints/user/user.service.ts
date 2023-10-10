@@ -23,21 +23,28 @@ const USER_DEFAULT_VALUES = {
 };
 
 export async function withTransaction<T>(callback: TransactionCallback<T>) {
-  const sequelize = getConnection();
-
-  return await sequelize.transaction(async (t) => callback(t));
+  return await getConnection().transaction(async (t) => callback(t));
 }
 
 export async function createUser(params: IUser, transaction: Transaction): Promise<IUserWithID> {
-  const { username, email, needChangePassword } = params;
   const password = encryptPassword(params.password);
-  const newUser: IUser = { ...USER_DEFAULT_VALUES, username, email, password, needChangePassword };
+  const newUser = buildNewUser({ ...params, password });
   const user = await userRepository.createUser(newUser, transaction);
   const result = obfuscatePassword(user);
 
   logger.debug('created user', result);
 
   return result;
+}
+
+function buildNewUser(user: IUser): IUser {
+  return {
+    ...USER_DEFAULT_VALUES,
+    email: user.email,
+    username: user.username,
+    password: user.password,
+    needChangePassword: user.needChangePassword,
+  };
 }
 
 function encryptPassword(password: string) {
