@@ -17,9 +17,9 @@ const logger = new Logger('UserService');
 type TransactionCallback<T> = (transaction: Transaction) => Promise<T>;
 
 const USER_DEFAULT_VALUES = {
-  needChangePassword: false,
+  enabled: true,
   confirmed: false,
-  enabled: false,
+  needChangePassword: false,
 };
 
 export async function withTransaction<T>(callback: TransactionCallback<T>) {
@@ -53,28 +53,32 @@ function encryptPassword(password: string) {
   return encrypt(password, secretKey);
 }
 
-export async function createConfirmationToken(params: IUserWithID, transaction: Transaction): Promise<IUserToken> {
-  const userId = params.id;
-  const token = uuidv4();
-  const expiresIn = getNextDayAt(new Date());
-  const userToken: IUserToken = { userId, token, type: 'confirmation-email', expiresIn };
-  const result = await userRepository.createUserToken(userToken, transaction);
+type CreateTokenParams = {
+  user: IUserWithID
+  type: UserTokenType
+  transaction: Transaction
+}
 
-  logger.debug('created confirmation user token', result);
+export async function createToken(params: CreateTokenParams): Promise<IUserToken> {
+  const token = uuidv4();
+  const userId = params.user.id;
+  const expiresIn = getExpirationDateByTokenType(params.type);
+  const userToken: IUserToken = { userId, token, expiresIn, type: params.type };
+  const result = await userRepository.createUserToken(userToken, params.transaction);
+
+  logger.debug('created user token', result);
 
   return result;
 }
 
-export async function createChangePasswordToken(params: IUserWithID, transaction: Transaction) {
-  const userId = params.id;
-  const token = uuidv4();
-  const expiresIn = getDaysAt(new Date(), 30);
-  const userToken: IUserToken = { userId, token, type: 'change-password', expiresIn };
-  const result = await userRepository.createUserToken(userToken, transaction);
-
-  logger.debug('created chnage-password user token', result);
-
-  return result;
+function getExpirationDateByTokenType(type: UserTokenType) {
+  if (type === 'change-password') {
+    return getDaysAt(new Date(), 30);
+  } else if (type === 'confirmation-email') {
+    return getNextDayAt(new Date());
+  } else {
+    return new Date();
+  }
 }
 
 export async function confirmUserAccount(token: string) {
