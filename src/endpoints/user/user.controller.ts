@@ -24,10 +24,10 @@ export async function user(user: IUser, res: Response) {
     const result = await service.withTransaction(async (transaction) => {
       const newUser = await service.createUser(user, transaction);
 
-      await service.createConfirmationToken(newUser, transaction);
+      await service.createToken({ user: newUser, type: 'confirmation-email', transaction });
 
       if (newUser.needChangePassword) {
-        await service.createChangePasswordToken(newUser, transaction);
+        await service.createToken({ user: newUser, type: 'change-password', transaction });
       }
 
       return { user: newUser };

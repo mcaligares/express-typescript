@@ -17,21 +17,18 @@ const logger = new Logger('UserService');
 type TransactionCallback<T> = (transaction: Transaction) => Promise<T>;
 
 const USER_DEFAULT_VALUES = {
-  needChangePassword: false,
+  enabled: true,
   confirmed: false,
-  enabled: false,
+  needChangePassword: false,
 };
 
 export async function withTransaction<T>(callback: TransactionCallback<T>) {
-  const sequelize = getConnection();
-
-  return await sequelize.transaction(async (t) => callback(t));
+  return await getConnection().transaction(async (t) => callback(t));
 }
 
 export async function createUser(params: IUser, transaction: Transaction): Promise<IUserWithID> {
-  const { username, email, needChangePassword } = params;
   const password = encryptPassword(params.password);
-  const newUser: IUser = { ...USER_DEFAULT_VALUES, username, email, password, needChangePassword };
+  const newUser = buildNewUser({ ...params, password });
   const user = await userRepository.createUser(newUser, transaction);
   const result = obfuscatePassword(user);
 
@@ -40,34 +37,48 @@ export async function createUser(params: IUser, transaction: Transaction): Promi
   return result;
 }
 
+function buildNewUser(user: IUser): IUser {
+  return {
+    ...USER_DEFAULT_VALUES,
+    email: user.email,
+    username: user.username,
+    password: user.password,
+    needChangePassword: user.needChangePassword,
+  };
+}
+
 function encryptPassword(password: string) {
   const secretKey = process.env.SECRET_KEY_PASSWORD as string;
 
   return encrypt(password, secretKey);
 }
 
-export async function createConfirmationToken(params: IUserWithID, transaction: Transaction): Promise<IUserToken> {
-  const userId = params.id;
-  const token = uuidv4();
-  const expiresIn = getNextDayAt(new Date());
-  const userToken: IUserToken = { userId, token, type: 'confirmation-email', expiresIn };
-  const result = await userRepository.createUserToken(userToken, transaction);
+type CreateTokenParams = {
+  user: IUserWithID
+  type: UserTokenType
+  transaction: Transaction
+}
 
-  logger.debug('created confirmation user token', result);
+export async function createToken(params: CreateTokenParams): Promise<IUserToken> {
+  const token = uuidv4();
+  const userId = params.user.id;
+  const expiresIn = getExpirationDateByTokenType(params.type);
+  const userToken: IUserToken = { userId, token, expiresIn, type: params.type };
+  const result = await userRepository.createUserToken(userToken, params.transaction);
+
+  logger.debug('created user token', result);
 
   return result;
 }
 
-export async function createChangePasswordToken(params: IUserWithID, transaction: Transaction) {
-  const userId = params.id;
-  const token = uuidv4();
-  const expiresIn = getDaysAt(new Date(), 30);
-  const userToken: IUserToken = { userId, token, type: 'change-password', expiresIn };
-  const result = await userRepository.createUserToken(userToken, transaction);
-
-  logger.debug('created chnage-password user token', result);
-
-  return result;
+function getExpirationDateByTokenType(type: UserTokenType) {
+  if (type === 'change-password') {
+    return getDaysAt(new Date(), 30);
+  } else if (type === 'confirmation-email') {
+    return getNextDayAt(new Date());
+  } else {
+    return new Date();
+  }
 }
 
 export async function confirmUserAccount(token: string) {
