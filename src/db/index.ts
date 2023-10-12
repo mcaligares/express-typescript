@@ -31,6 +31,7 @@ export async function initializeDB() {
     connection.alive = true;
     logger.debug('connected to db');
   } catch (e) {
+    connection.alive = false;
     logger.error('Unable to connect to db:', e);
     throw e;
   }
