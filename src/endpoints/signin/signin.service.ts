@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 import type { ISession } from '@/models/i-session';
-import type { IUser } from '@/models/i-user';
+import type { IUser, IUserWithID } from '@/models/i-user';
 import * as userRepository from '@/repositories/user.repository';
 import { decrypt } from '@/services/crypt.service';
 import { Logger } from '@/services/logger.service';
@@ -39,7 +39,7 @@ export async function signin(payload: Payload): Promise<ISession | undefined> {
   return { user, accessToken };
 }
 
-async function findUser(payload: Payload): Promise<IUser | undefined> {
+async function findUser(payload: Payload): Promise<IUserWithID | undefined> {
   const params: Partial<{ email: string, username: string }> = {};
 
   if ('email' in payload) {

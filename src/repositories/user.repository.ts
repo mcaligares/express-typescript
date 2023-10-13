@@ -139,7 +139,7 @@ export async function getAllUsers(filter: Partial<IUser>): Promise<IUser[]> {
 
 type EmailOrUsername = Partial<{ email: string, username: string }>;
 
-export async function findUserByEmailOrUsername(params: EmailOrUsername): Promise<IUser | undefined> {
+export async function findUserByEmailOrUsername(params: EmailOrUsername): Promise<IUserWithID | undefined> {
   let user: User | null;
 
   logger.debug('finding user by email or username', params);
@@ -151,7 +151,7 @@ export async function findUserByEmailOrUsername(params: EmailOrUsername): Promis
     return undefined;
   }
 
-  return user ? user as IUser : undefined;
+  return user ? user as IUserWithID : undefined;
 }
 
 export async function deleteUser(userId: number, transaction: Transaction) {

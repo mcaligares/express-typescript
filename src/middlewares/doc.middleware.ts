@@ -2,8 +2,9 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 
 const options: swaggerJSDoc.Options = {
-  apis: ['./src/endpoints/*.ts'],
+  apis: ['./src/endpoints/**/*.ts', './src/models/*.ts'],
   swaggerDefinition: {
+    basePath: '/api',
     info: {
       title: 'Express API',
       version: '1.0.0',
@@ -11,7 +12,7 @@ const options: swaggerJSDoc.Options = {
         email: 'mcaligares@gmail.com',
         name: 'Miguel Caligares'
       },
-      description: 'REST API made with Express.'
+      description: 'REST API made with Express.',
     },
   }
 };
