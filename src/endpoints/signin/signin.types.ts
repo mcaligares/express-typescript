@@ -3,9 +3,9 @@ import Joi from 'joi';
 /**
  * @swagger
  * parameters:
- *  SignInWithEmailRequest:
- *    data:
- *      name: data
+ *  signin:
+ *    email:
+ *      name: signin with email
  *      description: Email and password as JSON object
  *      in: body
  *      required: true
@@ -24,9 +24,9 @@ export type SigninWithEmailRequest = {
 /**
  * @swagger
  * parameters:
- *  SignInWithUsernameRequest:
- *    data:
- *      name: data
+ *  signin:
+ *    username:
+ *      name: signin with username
  *      description: Username and password as JSON object
  *      in: body
  *      required: true

@@ -53,7 +53,7 @@ const emailValidationHandler = (req: Request, res: Response, next: NextFunction)
  *    produces:
  *      - application/json
  *    parameters:
- *      - $ref: '#/parameters/SignInWithEmailRequest/data'
+ *      - $ref: '#/parameters/signin/email'
  *    responses:
  *      400:
  *        $ref: '#/definitions/InvalidData'
@@ -74,7 +74,7 @@ const usernameValidationHandler = (req: Request, res: Response, next: NextFuncti
  *    produces:
  *      - application/json
  *    parameters:
- *      - $ref: '#/parameters/SignInWithUsernameRequest/data'
+ *      - $ref: '#/parameters/signin/username'
  *    responses:
  *      400:
  *        $ref: '#/definitions/InvalidData'
