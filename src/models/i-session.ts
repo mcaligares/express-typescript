@@ -1,6 +1,17 @@
-import type { IUser } from '@/models/i-user';
+import type { IUserWithID } from '@/models/i-user';
 
+/**
+ * @swagger
+ * definitions:
+ *  ISession:
+ *    properties:
+ *      user:
+ *        type: object
+ *        $ref: '#/definitions/IUser'
+ *      accessToken:
+ *        type: string
+ */
 export type ISession = {
-  user: IUser
+  user: IUserWithID
   accessToken: string
 }

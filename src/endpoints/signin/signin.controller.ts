@@ -9,20 +9,12 @@ import type { SigninWithEmailRequest, SigninWithUsernameRequest } from './signin
 
 const logger = new Logger('SigninController');
 
-/**
- * @swagger
- * /signin:
- *   post:
- *     summary: Signin
- *     description: Use email and password to signin.
-*/
 export async function signinWithEmail(payload: SigninWithEmailRequest, res: Response) {
   try {
     logger.info('signin with email', obfuscatePassword(payload));
 
     return await signinWithPayload(payload, res);
   } catch (e) {
-    logger.info('error -----', e);
     logger.error('Error signin with email', payload, e);
 
     return createResponse(500, false)
@@ -32,13 +24,6 @@ export async function signinWithEmail(payload: SigninWithEmailRequest, res: Resp
   }
 }
 
-/**
- * @swagger
- * /signin/username:
- *   post:
- *     summary: Signin
- *     description: Use username and password to signin.
-*/
 export async function signinWithUsername(payload: SigninWithUsernameRequest, res: Response) {
   try {
     logger.info('signin with username', obfuscatePassword(payload));
