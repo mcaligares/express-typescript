@@ -10,7 +10,7 @@ import { getDaysAt, getNextDayAt } from '@/utils/date.utils';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import { getConnection } from '../../db';
-import type { IChangePasswordUserToken } from './user.types';
+import type { IChangePasswordUserToken, IUserFilter } from './user.types';
 
 const logger = new Logger('UserService');
 
@@ -138,7 +138,7 @@ export async function setUserPassword(params: IChangePasswordUserToken) {
 }
 
 
-export function getAllUsers(params: Partial<IUser>): Promise<IUser[]> {
+export function getAllUsers(params: IUserFilter): Promise<IUser[]> {
   return userRepository.getAllUsers(params);
 }
 

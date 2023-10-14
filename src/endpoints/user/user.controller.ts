@@ -6,17 +6,10 @@ import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
 
 import * as service from './user.service';
-import type { IChangePasswordUserToken, IConfirmationUserToken } from './user.types';
+import type { IChangePasswordUserToken, IConfirmationUserToken, IUserFilter } from './user.types';
 
 const logger = new Logger('UserController');
 
-/**
- * @swagger
- * /user:
- *   post:
- *     summary: Create a new user
- *     description: Create a new User entity previusly validated. Can be used to populate a list of fake users when prototyping or testing an API.
-*/
 export async function user(user: IUser, res: Response) {
   try {
     logger.info('creating new user', obfuscatePassword(user));
@@ -50,13 +43,6 @@ export async function user(user: IUser, res: Response) {
   }
 }
 
-/**
- * @swagger
- * /user/confirm:
- *   post:
- *     summary: confirm user account
- *     description: confirm user account
-*/
 export async function confirm({ token }: IConfirmationUserToken, res: Response) {
   try {
     logger.info('confirmating user token', token);
@@ -84,13 +70,6 @@ export async function confirm({ token }: IConfirmationUserToken, res: Response) 
   }
 }
 
-/**
- * @swagger
- * /user/password:
- *   post:
- *     summary: change the user password
- *     description: change the user password using a change-password-token as authenticator
-*/
 export async function setPassword(params: IChangePasswordUserToken, res: Response) {
   try {
     logger.info('change password user token', params.token);
@@ -118,14 +97,7 @@ export async function setPassword(params: IChangePasswordUserToken, res: Respons
   }
 }
 
-/**
- * @swagger
- * /users:
- *   get:
- *     summary: Get users
- *     description: Get all user by filter.
-*/
-export async function users(params: Partial<IUser>, res: Response) {
+export async function users(params: IUserFilter, res: Response) {
   try {
     logger.info('getting users');
     const users = await service.getAllUsers(params);
@@ -145,13 +117,6 @@ export async function users(params: Partial<IUser>, res: Response) {
   }
 }
 
-/**
- * @swagger
- * /user:
- *   patch:
- *     summary: Update an user
- *     description: Update user property (username or email).
-*/
 export async function update(user: IUserWithID, res: Response) {
   try {
     logger.info('updating user', user);
@@ -175,22 +140,10 @@ export async function update(user: IUserWithID, res: Response) {
   }
 }
 
-/**
- * @swagger
- * /user/enable:
- *   post:
- *     summary: Enable user
-*/
 export async function enable(userIdParam: string, res: Response) {
   return enableUser(userIdParam, true, res);
 }
 
-/**
- * @swagger
- * /user/disable:
- *   post:
- *     summary: Disable user
-*/
 export async function disable(userIdParam: string, res: Response) {
   return enableUser(userIdParam, false, res);
 }
@@ -218,13 +171,6 @@ async function enableUser(userIdParam: string, enable: boolean, res: Response) {
   }
 }
 
-/**
- * @swagger
- * /user/:userId:
- *   delete:
- *     summary: Delete a user
- *     description: Delete user and  userToken associated.
-*/
 export async function _delete(userIdParam: string, res: Response) {
   try {
     logger.info('deleting user', userIdParam);

@@ -2,7 +2,7 @@ import type { IUser, IUserWithID } from 'models/i-user';
 import type { WhereOptions } from 'sequelize';
 import { Op, type Transaction } from 'sequelize';
 
-import type { IUserIdAndEnable } from '@/endpoints/user/user.types';
+import type { IUserFilter, IUserIdAndEnable } from '@/endpoints/user/user.types';
 import type { IUserToken, IUserTokenWithID } from '@/models/i-user-token';
 import { Logger } from '@/services/logger.service';
 import { obfuscatePassword } from '@/utils/parse.utils';
@@ -113,7 +113,7 @@ export async function deleteUserToken(userTokenId: number, transaction?: Transac
   });
 }
 
-export async function getAllUsers(filter: Partial<IUser>): Promise<IUser[]> {
+export async function getAllUsers(filter: IUserFilter): Promise<IUser[]> {
   logger.debug('getting users with filter', filter);
 
   const where: WhereOptions<User> = {};
