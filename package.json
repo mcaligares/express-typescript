@@ -12,7 +12,8 @@
     "test": "DOTENV_CONFIG_PATH=.env.test jest --verbose --setupFiles dotenv/config",
     "test:coverage": "npm run test -- --detectOpenHandles --silent --coverage",
     "test:dev": "npm run test -- --watchAll",
-    "seed:all": "npm run build && sequelize-cli db:seed:all",
+    "seed": "npm run build && sequelize-cli db:seed:all",
+    "seed:undo": "npm run build && sequelize-cli db:seed:undo",
     "migration": "npm run build && sequelize-cli db:migrate",
     "migration:undo": "npm run build && sequelize-cli db:migrate:undo"
   },
