@@ -16,6 +16,7 @@ export async function createUser(user: IUser, transaction?: Transaction): Promis
   logger.debug('creating user', obfuscatePassword(user));
 
   return await User.create({
+    role: user.role,
     email: user.email,
     username: user.username,
     password: user.password,

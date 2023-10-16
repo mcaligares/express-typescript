@@ -17,10 +17,11 @@ const logger = new Logger('UserService');
 type TransactionCallback<T> = (transaction: Transaction) => Promise<T>;
 
 const USER_DEFAULT_VALUES = {
+  role: 'USER',
   enabled: true,
   confirmed: false,
   needChangePassword: false,
-};
+} as IUser;
 
 export async function withTransaction<T>(callback: TransactionCallback<T>) {
   return await getConnection().transaction(async (t) => callback(t));
