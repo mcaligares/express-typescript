@@ -1,9 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 
-import { authMiddleware } from '@/middlewares/auth.middleware';
+import { authenticationMiddleware } from '@/middlewares/authentication.middleware';
+import { authorizationMiddleware } from '@/middlewares/authorization.middleware';
 import { validationMiddleware } from '@/middlewares/validation.middleware';
 import type { IRequest } from '@/models/i-request';
+import type { AuthRouteKey } from '@/routes/authorization.route';
 
 import * as userController from './user.controller';
 import { ChangePasswordUserTokenSchema, ConfirmationUserTokenSchema, UpdateUserSchema, UserSchema } from './user.types';
@@ -60,6 +62,12 @@ import { ChangePasswordUserTokenSchema, ConfirmationUserTokenSchema, UpdateUserS
  */
 const router = Router();
 
+const authenticateRequest = (req: Request, res: Response, next: NextFunction) =>
+  authenticationMiddleware(req as IRequest, res, next);
+
+const authorizeRequest = (req: Request, res: Response, next: NextFunction, path: AuthRouteKey) =>
+  authorizationMiddleware(req as IRequest, res, next, path);
+
 /**
  * @swagger
  * /user:
@@ -76,16 +84,15 @@ const router = Router();
  *      200:
  *        $ref: '#/definitions/response/user'
  */
-const authValidationHandler = (req: Request, res: Response, next: NextFunction) =>
-  authMiddleware(req as IRequest, res, next);
 
-const userValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+const userValidationRequest = (req: Request, res: Response, next: NextFunction) =>
   validationMiddleware(req, res, next, UserSchema);
 
 router.post(
   '/user',
-  userValidationHandler,
-  authValidationHandler,
+  userValidationRequest,
+  authenticateRequest,
+  (req: Request, res: Response, next: NextFunction) => authorizeRequest(req, res, next, 'user-create'),
   (req: Request, res: Response) => userController.user(req.body, res)
 );
 
@@ -105,7 +112,7 @@ router.post(
  */
 router.get(
   '/users',
-  authValidationHandler,
+  authenticateRequest,
   (req: Request, res: Response) => userController.users(req.body, res)
 );
 
@@ -125,12 +132,12 @@ router.get(
  *      200:
  *        $ref: '#/definitions/response/empty'
  */
-const confirmationUserTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+const confirmationUserTokenValidationRequest = (req: Request, res: Response, next: NextFunction) =>
   validationMiddleware(req, res, next, ConfirmationUserTokenSchema);
 
 router.post(
   '/user/confirm',
-  confirmationUserTokenValidationHandler,
+  confirmationUserTokenValidationRequest,
   (req: Request, res: Response) => userController.confirm(req.body, res)
 );
 
@@ -150,12 +157,12 @@ router.post(
  *      200:
  *        $ref: '#/definitions/response/empty'
  */
-const changePasswordUserTokenValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+const changePasswordUserTokenValidationRequest = (req: Request, res: Response, next: NextFunction) =>
   validationMiddleware(req, res, next, ChangePasswordUserTokenSchema);
 
 router.post(
   '/user/password',
-  changePasswordUserTokenValidationHandler,
+  changePasswordUserTokenValidationRequest,
   (req: Request, res: Response) => userController.setPassword(req.body, res)
 );
 
@@ -177,7 +184,8 @@ router.post(
  */
 router.delete(
   '/user/:userId',
-  authValidationHandler,
+  authenticateRequest,
+  (req: Request, res: Response, next: NextFunction) => authorizeRequest(req, res, next, 'user-delete'),
   (req: Request, res: Response) => userController._delete(req.params.userId, res)
 );
 
@@ -197,13 +205,14 @@ router.delete(
  *      200:
  *        $ref: '#/definitions/response/user'
  */
-const updateUserValidationHandler = (req: Request, res: Response, next: NextFunction) =>
+const updateUserValidationRequest = (req: Request, res: Response, next: NextFunction) =>
   validationMiddleware(req, res, next, UpdateUserSchema);
 
 router.patch(
   '/user',
-  authValidationHandler,
-  updateUserValidationHandler,
+  authenticateRequest,
+  updateUserValidationRequest,
+  (req: Request, res: Response, next: NextFunction) => authorizeRequest(req, res, next, 'user-update'),
   (req: Request, res: Response) => userController.update(req.body, res)
 );
 
@@ -225,7 +234,8 @@ router.patch(
  */
 router.post(
   '/user/enable/:userId',
-  authValidationHandler,
+  authenticateRequest,
+  (req: Request, res: Response, next: NextFunction) => authorizeRequest(req, res, next, 'user-enable'),
   (req: Request, res: Response) => userController.enable(req.params.userId, res)
 );
 
@@ -247,7 +257,8 @@ router.post(
  */
 router.post(
   '/user/disable/:userId',
-  authValidationHandler,
+  authenticateRequest,
+  (req: Request, res: Response, next: NextFunction) => authorizeRequest(req, res, next, 'user-enable'),
   (req: Request, res: Response) => userController.disable(req.params.userId, res)
 );
 
