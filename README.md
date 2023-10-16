@@ -5,18 +5,39 @@ This template should help get you started developing in Node with Express and Ty
 ## 🚀 Get started
 
 ```sh
+# run postgres container with docker-compose
+docker-compose -f docker-compose.dev.yml up --build
+
 # install dependencies
 npm run install
 
 # run server
 npm start
 
-# run postgres container with docker-compose
-docker-compose -f docker-compose.dev.yml up --build
-
 # run migrations and seeders
 npm run migrate
 npm run seed:all
+
+# sign in
+curl --request POST \
+  --url http://localhost:5001/api/signin \
+  --header 'Content-Type: application/json' \
+  --data '{ "email": "admin@mail.com", "password": "123456" }'
+
+
+# psql basic command
+
+# open connection
+psql -U root -d express_db -h localhost
+# list all databases
+\l
+# connect to database
+\c express_db
+# list all tables
+\dt
+# table detail
+\d "Users"
+
 ```
 
 ## 📦 Dev Environment
@@ -73,7 +94,8 @@ These extensions are configured to be recommended to the user in the first use. 
 | `npm run test:dev`      | Runs the `jest` tests and watches for any change.                                               |
 | `npm run migrate`       | Runs the `sequelize-cli` command to run migrations.                                             |
 | `npm run migrate:undo`  | Runs the `sequelize-cli` command to undo migrations.                                            |
-| `npm run seed:all`      | Runs the `sequelize-cli` command to run seeders.                                                |
+| `npm run seed`          | Runs the `sequelize-cli` command to run seeders.                                                |
+| `npm run seed:undo`     | Runs the `sequelize-cli` command to undo seeders.                                               |
 
 ## ⚙️ Env variables
 

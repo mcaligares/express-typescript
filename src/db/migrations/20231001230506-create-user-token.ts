@@ -32,11 +32,11 @@ export default {
         allowNull: false,
         type: DataType.DATE
       },
-      createdAt: {
+      creationDate: {
         allowNull: false,
         type: DataType.DATE
       },
-      updatedAt: {
+      updatedOn: {
         allowNull: false,
         type: DataType.DATE
       }

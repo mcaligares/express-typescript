@@ -1,9 +1,13 @@
 require('dotenv').config();
 
-import { USER_TABLE } from 'db/models/user';
+import crypto from 'crypto-js/';
 import type { QueryInterface } from 'sequelize';
 
-import { encrypt } from '@/services/crypt.service';
+import { USER_TABLE } from '../models/user';
+
+function encrypt(value: string, secret: string) {
+  return crypto.AES.encrypt(value, secret).toString();
+}
 
 export default {
   up: async (queryInterface: QueryInterface) => {
