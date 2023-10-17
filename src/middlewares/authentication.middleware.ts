@@ -7,10 +7,10 @@ import { getSession } from '@/services/session.service';
 
 const logger = new Logger('AuthenticationMiddleware');
 
-export function authenticationMiddleware(req: IRequest, res: Response, next: NextFunction) {
+export async function authenticationMiddleware(req: IRequest, res: Response, next: NextFunction) {
   try {
     logger.debug('authenticating request...');
-    const session = getSession(req);
+    const session = await getSession(req);
 
     if (!session) {
       logger.debug('token is empty or invalid');
@@ -21,6 +21,7 @@ export function authenticationMiddleware(req: IRequest, res: Response, next: Nex
     }
 
     req.session = session;
+    req.hasAuthenticated = true;
     logger.debug('request authenticated');
     next();
   } catch (e) {

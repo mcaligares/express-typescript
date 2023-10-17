@@ -165,3 +165,19 @@ export async function deleteUser(userId: number, transaction: Transaction) {
     transaction,
   });
 }
+
+export async function getUserById(id: number): Promise<IUserWithID | undefined> {
+  if (!id) {
+    return undefined;
+  }
+
+  const user = await User.findOne({
+    where: {
+      id,
+      enabled: true,
+    },
+    attributes: { exclude: ['password'] }
+  });
+
+  return user ? user as IUserWithID : undefined;
+}

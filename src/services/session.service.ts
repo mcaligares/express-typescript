@@ -5,12 +5,13 @@ import type { Request } from 'express';
 import type { IRequest } from '@/models/i-request';
 import type { ISession } from '@/models/i-session';
 import type { IUserWithID } from '@/models/i-user';
+import { getUserById } from '@/repositories/user.repository';
 
 import { decodeToken } from './token.service';
 
-type DecodedSessionToken<T> = { payload: T, iat: number };
+type DecodedSession<T> = { payload: T, iat: number };
 
-export function getSession(req: IRequest): Omit<ISession, 'accessToken'> | undefined {
+export async function getSession(req: IRequest): Promise<Omit<ISession, 'accessToken'> | undefined> {
   if (req.session) {
     return req.session;
   }
@@ -22,9 +23,10 @@ export function getSession(req: IRequest): Omit<ISession, 'accessToken'> | undef
   }
 
   const secretKey = process.env.SECRET_KEY_TOKEN as string;
-  const decodedToken = decodeToken(token, secretKey) as DecodedSessionToken<IUserWithID>;
+  const decodedToken = decodeToken(token, secretKey) as DecodedSession<IUserWithID>;
+  const user = await getUserById(decodedToken?.payload?.id);
 
-  return { user: decodedToken.payload };
+  return user ? { user } : undefined;
 }
 
 function getTokenFromHeader(req: Request): string | undefined {
