@@ -22,6 +22,7 @@
 export interface IUser {
   email: string
   username: string
+  role: IRole
   password: string
   needChangePassword: boolean
   confirmed: boolean
@@ -31,3 +32,5 @@ export interface IUser {
 export interface IUserWithID extends IUser {
   id: number
 }
+
+export type IRole = 'USER' | 'ADMIN' | 'ROOT';

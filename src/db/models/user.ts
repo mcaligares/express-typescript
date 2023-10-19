@@ -1,17 +1,14 @@
 /* eslint-disable indent */
-import type { Optional } from 'sequelize';
-import { AllowNull, Column, CreatedAt, DeletedAt, Model, Table, Unique, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, Column, CreatedAt, DataType, DeletedAt, Model, Table, Unique, UpdatedAt } from 'sequelize-typescript';
 
-import type { IUser } from '@/models/i-user';
+import type { IRole, IUser, IUserWithID } from '@/models/i-user';
 
 export const USER_TABLE = 'Users';
 
-type UserAttributes = IUser & { id: number };
-
-type UserCreationAttributes = Optional<UserAttributes, 'id'>;
+type UserCreationAttributes = IUser;
 
 @Table({ tableName: USER_TABLE })
-class User extends Model<UserAttributes, UserCreationAttributes> {
+class User extends Model<IUserWithID, UserCreationAttributes> {
   @Unique
   @AllowNull(false)
   @Column
@@ -21,6 +18,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   @AllowNull(false)
   @Column
   username!: string;
+
+  @AllowNull(false)
+  @Column(DataType.ENUM<IRole>('USER', 'ADMIN', 'ROOT'))
+  role!: IRole;
 
   @AllowNull(false)
   @Column

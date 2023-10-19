@@ -16,6 +16,7 @@ export async function createUser(user: IUser, transaction?: Transaction): Promis
   logger.debug('creating user', obfuscatePassword(user));
 
   return await User.create({
+    role: user.role,
     email: user.email,
     username: user.username,
     password: user.password,
@@ -163,4 +164,20 @@ export async function deleteUser(userId: number, transaction: Transaction) {
     where: { userId },
     transaction,
   });
+}
+
+export async function getUserById(id: number): Promise<IUserWithID | undefined> {
+  if (!id) {
+    return undefined;
+  }
+
+  const user = await User.findOne({
+    where: {
+      id,
+      enabled: true,
+    },
+    attributes: { exclude: ['password'] }
+  });
+
+  return user ? user as IUserWithID : undefined;
 }
