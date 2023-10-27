@@ -30,7 +30,7 @@ export function validationMiddleware(req: Request, res: Response, next: NextFunc
   } catch (e) {
     logger.error('Error validating request', e);
 
-    return createResponse(403, false)
+    return createResponse(500, false)
       .withLogger(logger)
       .send(res);
   }

@@ -3,10 +3,11 @@ import type { Response } from 'express';
 import { authorizationMiddleware } from '../../src/middlewares/authorization.middleware';
 import type { IRequest } from '../../src/models/i-request';
 import type { ISession } from '../../src/models/i-session';
+import type { AuthRouteKey } from '../../src/routes/authorization.route';
 
 jest.mock('../../src/routes/authorization.route', () => ({
   authRouteMap: [
-    { key: 'some-path', allowedRoles: ['ADMIN'] }
+    { key: 'some-path' as AuthRouteKey, allowedRoles: ['ADMIN'] }
   ]
 }));
 jest.mock('../../src/services/controller.service', () => ({
@@ -39,7 +40,7 @@ describe('test authorization middleware', () => {
     const session = { user: { role: 'ADMIN' } } as ISession;
     const req = { isAuthenticated: true, session } as unknown as IRequest;
 
-    const response = authorizationMiddleware(req, res, next, 'some-path');
+    const response = authorizationMiddleware(req, res, next, 'some-path' as AuthRouteKey);
 
     expect(response).toBeUndefined();
     expect(next).toHaveBeenCalledTimes(1);
@@ -51,7 +52,7 @@ describe('test authorization middleware', () => {
     const req = { isAuthenticated: true, session } as unknown as IRequest;
     const expectedResponse = { code: 403, isOk: false };
 
-    const response = authorizationMiddleware(req, res, next, 'some-path');
+    const response = authorizationMiddleware(req, res, next, 'some-path' as AuthRouteKey);
 
     expect(response).toEqual(expectedResponse);
   });
@@ -61,7 +62,7 @@ describe('test authorization middleware', () => {
     const session = { user: { role: 'USER' } } as ISession;
     const req = { isAuthenticated: true, session } as unknown as IRequest;
 
-    const response = authorizationMiddleware(req, res, next, 'unmapped-path');
+    const response = authorizationMiddleware(req, res, next, 'unmapped-path' as AuthRouteKey);
 
     expect(response).toBeUndefined();
     expect(next).toHaveBeenCalledTimes(1);
