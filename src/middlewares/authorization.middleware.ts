@@ -12,7 +12,7 @@ export function authorizationMiddleware(req: IRequest, res: Response, next: Next
   try {
     logger.debug('authorization request...');
 
-    if (!req.hasAuthenticated) {
+    if (!req.isAuthenticated) {
       return createResponse(403, false)
         .withLogger(logger)
         .send(res);
@@ -35,7 +35,7 @@ export function authorizationMiddleware(req: IRequest, res: Response, next: Next
   } catch (e) {
     logger.error('Error authorization request', e);
 
-    return createResponse(403, false)
+    return createResponse(500, false)
       .withLogger(logger)
       .send(res);
   }

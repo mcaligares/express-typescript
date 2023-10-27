@@ -21,7 +21,7 @@ export async function authenticationMiddleware(req: IRequest, res: Response, nex
     }
 
     req.session = session;
-    req.hasAuthenticated = true;
+    req.isAuthenticated = true;
     logger.debug('request authenticated');
     next();
   } catch (e) {
