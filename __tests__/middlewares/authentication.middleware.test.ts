@@ -37,7 +37,7 @@ describe('test authentication middleware', () => {
     expect(response).toBeUndefined();
     expect(next).toHaveBeenCalledTimes(1);
     expect(req.session).toEqual(session);
-    expect(req.hasAuthenticated).toBeTruthy();
+    expect(req.isAuthenticated).toBeTruthy();
   });
   test('when use an invalid token should return an unauthorized code', async () => {
     const req = {} as IRequest;
