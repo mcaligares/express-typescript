@@ -26,6 +26,10 @@ export default {
         allowNull: false,
         type: DataTypes.STRING
       },
+      role: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
       needChangePassword: {
         type: DataTypes.BOOLEAN
       },

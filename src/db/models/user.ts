@@ -20,7 +20,7 @@ class User extends Model<IUserWithID, UserCreationAttributes> {
   username!: string;
 
   @AllowNull(false)
-  @Column(DataType.ENUM<IRole>('USER', 'ADMIN', 'ROOT'))
+  @Column(DataType.STRING)
   role!: IRole;
 
   @AllowNull(false)

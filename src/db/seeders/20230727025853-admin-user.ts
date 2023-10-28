@@ -19,6 +19,7 @@ export default {
           process.env.ADMIN_PASSWORD as string,
           process.env.SECRET_KEY_PASSWORD as string,
         ),
+        role: 'ROOT',
         needChangePassword: false,
         confirmed: true,
         enabled: true,
