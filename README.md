@@ -5,18 +5,21 @@ This template should help get you started developing in Node with Express and Ty
 ## 🚀 Get started
 
 ```sh
+# copy env file
+cp .env.development .env
+
 # run postgres container with docker-compose
 docker-compose -f docker-compose.dev.yml up --build
 
 # install dependencies
-npm run install
+npm install
 
 # run server
 npm start
 
 # run migrations and seeders
-npm run migrate
-npm run seed:all
+npm run migration
+npm run seed
 
 # sign in
 curl --request POST \
