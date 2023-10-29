@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: express_postgres
+    container_name: ${APP_NAME}_postgres
     image: postgres
     restart: always
     volumes:
