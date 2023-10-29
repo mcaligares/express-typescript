@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    container_name: express_api
+    container_name: ${APP_NAME}_api
     build: .
     restart: always
     environment:
@@ -19,7 +19,7 @@ services:
       - db
 
   db:
-    container_name: express_postgres
+    container_name: ${APP_NAME}_postgres
     image: postgres
     restart: always
     volumes:
